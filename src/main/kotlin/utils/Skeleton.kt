@@ -1,4 +1,10 @@
+@file:Suppress("UNUSED_PARAMETER") //just a template
+
 package utils
+
+/**
+ * The skeleton code to run each day
+ */
 
 fun main() {
     val input = readInput("DayXX")
