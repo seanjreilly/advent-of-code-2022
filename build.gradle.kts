@@ -20,10 +20,6 @@ tasks {
             events("passed", "skipped", "failed")
         }
     }
-
-    wrapper {
-        gradleVersion = "7.3"
-    }
 }
 
 dependencies {
