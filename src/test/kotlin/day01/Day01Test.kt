@@ -3,7 +3,7 @@ package day01
 import org.junit.jupiter.api.Test
 
 class Day01Test {
-    val sampleInput = """
+    private val sampleInput = """
         1000
         2000
         3000
