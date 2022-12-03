@@ -21,8 +21,16 @@ fun part1(input: List<String>): Int {
         .sumOf { priority(it) }
 }
 
-fun part2(input: List<String>): Long {
-    return 0
+fun part2(input: List<String>): Int {
+    return input.windowed(3, 3)
+        .map { Triple(it[0], it[1], it[2]) }
+        .map { (first, second, third) -> findCommonCharacter(first, second, third) }
+        .sumOf { priority(it) }
+}
+
+fun findCommonCharacter(first: String, second: String, third: String): Char {
+    val commonCharactersInFirstAndSecond = first.toSet().intersect(second.toSet())
+    return third.first { it in commonCharactersInFirstAndSecond }
 }
 
 fun priority(char: Char): Int {

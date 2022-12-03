@@ -18,6 +18,17 @@ class Day03Test {
     }
 
     @Test
+    fun `part2 should find the common character for each chunk of three lines and return the sum of those priorities`() {
+        assert(part2(sampleInput) == 70)
+    }
+
+    @Test
+    fun `findMatchingCharacter should return the character that is in all three lines`() {
+        assert(findCommonCharacter("vJrwpWtwJgWrhcsFMMfFFhFp", "jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL", "PmmdzqPrVvPwwTWBwg") == 'r')
+        assert(findCommonCharacter("wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn", "ttgJtRGJQctTZtZT", "CrZsJsPPZsGzwwsLwLmpwMDw") == 'Z')
+    }
+
+    @Test
     fun `priority should return scores of 1 to 26 for lowercase letters`() {
         val chars = 'a'..'z'
         chars.forEachIndexed { index, char ->
@@ -51,4 +62,3 @@ class Day03Test {
         assert(priority('s') == 19)
     }
 }
-
