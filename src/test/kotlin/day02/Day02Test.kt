@@ -58,6 +58,31 @@ class Day02Test {
         }
     }
 
+    @Nested
+    inner class OpponentsPlayTest {
+        @Test
+        fun `Paper should beat Rock, lose to Scissors, and draw itself`() {
+            assert(OpponentsPlay.PAPER.beats == YourPlay.ROCK)
+            assert(OpponentsPlay.PAPER.losesTo == YourPlay.SCISSORS)
+            assert(OpponentsPlay.PAPER.draws == YourPlay.PAPER)
+        }
+
+        @Test
+        fun `Rock should beat Scissors, lose to Paper, and draw itself`() {
+            assert(OpponentsPlay.ROCK.beats == YourPlay.SCISSORS)
+            assert(OpponentsPlay.ROCK.losesTo == YourPlay.PAPER)
+            assert(OpponentsPlay.ROCK.draws == YourPlay.ROCK)
+        }
+
+        @Test
+        fun `Scissors should beat Paper, lose to Rock, and draw itself`() {
+            assert(OpponentsPlay.SCISSORS.beats == YourPlay.PAPER)
+            assert(OpponentsPlay.SCISSORS.losesTo == YourPlay.ROCK)
+            assert(OpponentsPlay.SCISSORS.draws == YourPlay.SCISSORS)
+        }
+
+    }
+
     @Test
     fun `score should return the score for the selected plus the score for the outcome`() {
         assert(score(YourPlay.PAPER, Outcome.Win) == 8)

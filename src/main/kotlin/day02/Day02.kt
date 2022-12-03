@@ -31,23 +31,21 @@ private fun parseRawValues(line: String): Pair<OpponentsPlay, YourPlay> {
 }
 
 enum class OpponentsPlay(val rawValue: String) {
-    ROCK("A"), PAPER("B"), SCISSORS("C")
+    ROCK("A"), PAPER("B"), SCISSORS("C");
+    val losesTo = YourPlay.values()[(this.ordinal + 1) % 3] //wraparound for scissors loses to rock
+    val beats = YourPlay.values()[(this.ordinal + 2) % 3] //wraparound for paper beats rock and scissors beats paper
+    val draws = YourPlay.values()[this.ordinal]
 }
 
 enum class YourPlay(val rawValue: String) {
     ROCK("X"), PAPER("Y"), SCISSORS("Z");
     val score = ordinal + 1
     fun outcome(opponentsPlay: OpponentsPlay) : Outcome {
-        //wraparound for rock beats scissors
-        val losesTo = (OpponentsPlay.values() + OpponentsPlay.values().first())[this.ordinal + 1]
-
-        if (opponentsPlay == losesTo) {
-            return Outcome.Loss
+        return when (this) {
+            opponentsPlay.beats -> Outcome.Loss
+            opponentsPlay.losesTo -> Outcome.Win
+            else -> Outcome.Draw
         }
-        if (opponentsPlay.ordinal == this.ordinal) {
-            return Outcome.Draw
-        }
-        return Outcome.Win
     }
 }
 
