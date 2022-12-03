@@ -14,7 +14,12 @@ class Day02Test {
     fun `part1 should parse your play, your opponents play for each line, calculate the outcome, and then calculate the score for each line and return the total score`() {
         assert(part1(sampleInput) == 15)
     }
-    
+
+    @Test
+    fun `part2 should parse your play and the desired outcome for each line, then calculate the score for each line and return the total score`() {
+        assert(part2(sampleInput) == 12)
+    }
+
     @Nested
     inner class YourPlayTest {
         @Test
@@ -55,6 +60,16 @@ class Day02Test {
             assert(YourPlay.ROCK.outcome(OpponentsPlay.ROCK) == Outcome.Draw)
             assert(YourPlay.PAPER.outcome(OpponentsPlay.PAPER) == Outcome.Draw)
             assert(YourPlay.SCISSORS.outcome(OpponentsPlay.SCISSORS) == Outcome.Draw)
+        }
+
+        @Test
+        fun `findPlayForDesiredOutcome should return the play needed to get the desired outcome`() {
+            OpponentsPlay.values().forEach { opponentsPlay ->
+                Outcome.values().forEach { desiredOutcome ->
+                    val suggestedPlay: YourPlay = opponentsPlay.findPlayForDesiredOutcome(desiredOutcome)
+                    assert(suggestedPlay.outcome(opponentsPlay) == desiredOutcome)
+                }
+            }
         }
     }
 

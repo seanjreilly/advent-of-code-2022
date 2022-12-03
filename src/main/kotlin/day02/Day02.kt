@@ -15,8 +15,11 @@ fun part1(input: List<String>): Int {
         .sumOf { score(it.first, it.second) }
 }
 
-fun part2(input: List<String>): Long {
-    return 0
+fun part2(input: List<String>): Int {
+    return input
+        .map { parseRawValuesPart2(it) }
+        .map { Pair(it.first.findPlayForDesiredOutcome(it.second), it.second) }
+        .sumOf { score(it.first, it.second) }
 }
 
 fun score(yourPlay: YourPlay, outcome: Outcome): Int {
@@ -30,11 +33,27 @@ private fun parseRawValuesPart1(line: String): Pair<OpponentsPlay, YourPlay> {
     return Pair(first, second)
 }
 
+private fun parseRawValuesPart2(line: String): Pair<OpponentsPlay, Outcome> {
+    val (rawFirst, rawSecond) = line.split(' ', limit = 2)
+    val first = OpponentsPlay.values().first { it.rawValue == rawFirst }
+    val second = Outcome.values().first { it.rawValue == rawSecond }
+    return Pair(first, second)
+}
+
 enum class OpponentsPlay(val rawValue: String) {
     ROCK("A"), PAPER("B"), SCISSORS("C");
+
     val losesTo = YourPlay.values()[(this.ordinal + 1) % 3] //wraparound for scissors loses to rock
     val beats = YourPlay.values()[(this.ordinal + 2) % 3] //wraparound for paper beats rock and scissors beats paper
     val draws = YourPlay.values()[this.ordinal]
+
+    fun findPlayForDesiredOutcome(desiredOutcome: Outcome): YourPlay {
+        return when(desiredOutcome) {
+            Outcome.Win -> this.losesTo
+            Outcome.Loss -> this.beats
+            Outcome.Draw -> this.draws
+        }
+    }
 }
 
 enum class YourPlay(val rawValue: String) {
@@ -49,6 +68,6 @@ enum class YourPlay(val rawValue: String) {
     }
 }
 
-enum class Outcome(val score: Int) {
-    Win(6), Loss(0), Draw(3)
+enum class Outcome(val rawValue: String, val score: Int) {
+    Win("Z",6), Loss("X", 0), Draw("Y", 3)
 }
