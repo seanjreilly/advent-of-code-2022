@@ -10,7 +10,7 @@ fun main() {
 
 fun part1(input: List<String>): Int {
     return input
-        .map { parseRawValues(it) }
+        .map { parseRawValuesPart1(it) }
         .map { Pair(it.second, it.second.outcome(it.first)) }
         .sumOf { score(it.first, it.second) }
 }
@@ -23,7 +23,7 @@ fun score(yourPlay: YourPlay, outcome: Outcome): Int {
     return yourPlay.score + outcome.score
 }
 
-private fun parseRawValues(line: String): Pair<OpponentsPlay, YourPlay> {
+private fun parseRawValuesPart1(line: String): Pair<OpponentsPlay, YourPlay> {
     val (rawFirst, rawSecond) = line.split(' ', limit = 2)
     val first = OpponentsPlay.values().first { it.rawValue == rawFirst }
     val second = YourPlay.values().first { it.rawValue == rawSecond }

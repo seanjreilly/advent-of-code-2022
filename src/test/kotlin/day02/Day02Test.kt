@@ -11,7 +11,7 @@ class Day02Test {
     """.trimIndent().lines()
 
     @Test
-    fun `part1 should calculate the plays and outcomes for each line and return the total score`() {
+    fun `part1 should parse your play, your opponents play for each line, calculate the outcome, and then calculate the score for each line and return the total score`() {
         assert(part1(sampleInput) == 15)
     }
     
