@@ -20,6 +20,11 @@ class Day04Test {
     }
 
     @Test
+    fun `part2 should return the count of lines where one range overlaps the other`() {
+        assert(part2(sampleInput) == 4)
+    }
+
+    @Test
     fun `parseLine should return a Pair of IntRange objects`() {
         val (first: IntRange, second: IntRange) = parseLine(sampleInput.first())
 
@@ -75,6 +80,69 @@ class Day04Test {
             val otherRange = 3..9
 
             assert(!thisRange.contains(otherRange))
+        }
+        
+        @Test
+        fun `IntRange dot overlaps should return false given an IntRange greater than any element in this range`() {
+            val thisRange = 1..2
+            val otherRange = 3..4
+
+            assert(!thisRange.overlaps(otherRange))
+        }
+
+        @Test
+        fun `IntRange dot overlaps should return false given an IntRange less than any element in this range`() {
+            val thisRange = 5..6
+            val otherRange = 1..2
+
+            assert(!thisRange.overlaps(otherRange))
+        }
+
+        @Test
+        fun `IntRange dot overlaps should return true given an IntRange where the lowest bound is this range's lower bound`() {
+            val thisRange = 1..10
+            val otherRange = 1..2
+
+            assert(thisRange.overlaps(otherRange))
+        }
+
+        @Test
+        fun `IntRange dot overlaps should return true given an IntRange where this range contains the other range's lower bound`() {
+            val thisRange = 1..10
+            val otherRange = 2..11
+
+            assert(thisRange.overlaps(otherRange))
+        }
+
+        @Test
+        fun `IntRange dot overlaps should return true given an IntRange where the highest bound is this range's upper bound`() {
+            val thisRange = 10..12
+            val otherRange = 8..10
+
+            assert(thisRange.overlaps(otherRange))
+        }
+
+        @Test
+        fun `IntRange dot overlaps should return true given an IntRange where this range contains the other range's upper bound`() {
+            val thisRange = 10..12
+            val otherRange = 8..11
+
+            assert(thisRange.overlaps(otherRange))
+        }
+
+        @Test
+        fun `IntRange dot overlaps should return true given an IntRange completely contained within this range`() {
+            val thisRange = 1..10
+            val otherRange = 5..6
+
+            assert(thisRange.overlaps(otherRange))
+        }
+
+        @Test
+        fun `IntRange dot overlaps should return true given the same range`() {
+            val thisRange = 1..10
+
+            assert(thisRange.overlaps(thisRange))
         }
     }
 }

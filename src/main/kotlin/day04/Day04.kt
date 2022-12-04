@@ -11,12 +11,13 @@ fun main() {
 fun part1(input: List<String>): Int {
     return input
         .map(::parseLine)
-        .filter { (first, second) -> first.contains(second) || second.contains(first) }
-        .count()
+        .count { (first, second) -> first.contains(second) || second.contains(first) }
 }
 
-fun part2(input: List<String>): Long {
-    return 0
+fun part2(input: List<String>): Int {
+    return input
+        .map(::parseLine)
+        .count { (first, second) -> first.overlaps(second) || second.overlaps(first)}
 }
 
 fun parseLine(line: String): Pair<IntRange, IntRange> {
@@ -29,3 +30,5 @@ fun parseLine(line: String): Pair<IntRange, IntRange> {
 }
 
 fun IntRange.contains(otherRange: IntRange) = this.contains(otherRange.first) && this.contains(otherRange.last)
+
+fun IntRange.overlaps(otherRange: IntRange) = this.contains(otherRange.first) || this.contains(otherRange.last)
