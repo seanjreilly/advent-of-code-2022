@@ -1,8 +1,8 @@
-@file:Suppress("UNUSED_PARAMETER") //just a template
+@file:Suppress("UNUSED_PARAMETER", "unused") //just a template
 
 package utils
 
-/**
+/*
  * The skeleton code to run each day
  */
 
@@ -19,3 +19,9 @@ fun part1(input: List<String>): Long {
 fun part2(input: List<String>): Long {
     return 0
 }
+
+/*
+ * Skeleton code for the test file
+ */
+private val sampleInput = """
+    """.trimIndent().lines()
