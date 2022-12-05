@@ -18,10 +18,7 @@ fun part1(input: List<String>): String {
             to.addLast(from.removeLast())
         }
     }
-    return stacks.entries
-        .sortedBy { it.key }
-        .map { it.value.last() }
-        .joinToString("")
+    return joinTopEntryOnEachStackInOrder(stacks)
 }
 
 fun part2(input: List<String>): String {
@@ -66,3 +63,8 @@ fun parseStacks(input: List<String>): Map<Int, ArrayDeque<Char>> {
 
     return result
 }
+
+private fun joinTopEntryOnEachStackInOrder(stacks: Map<Int, ArrayDeque<Char>>) = stacks.entries
+    .sortedBy { it.key }
+    .map { it.value.last() }
+    .joinToString("")
