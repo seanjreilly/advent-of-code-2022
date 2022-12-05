@@ -42,18 +42,20 @@ data class Operation(val numberToMove:Int, val from:Int, val to:Int)
 val operationRegex = """\s*move (\d+) from (\d+) to (\d+)""".toRegex()
 
 fun parseOperations(input: List<String>): List<Operation> {
-    val relevantInput = input.dropWhile { it.isNotBlank() }.drop(1) //skip the blank line
-    return relevantInput.map {
-        val(numberToMove, from, to) = operationRegex.matchEntire(it)!!.destructured
-        Operation(numberToMove.toInt(), from.toInt(), to.toInt())
+    return input
+        .dropWhile { it.isNotBlank() }
+        .drop(1) //skip the blank line too
+        .map {
+            val (numberToMove, from, to) = operationRegex.matchEntire(it)!!.destructured
+            Operation(numberToMove.toInt(), from.toInt(), to.toInt())
     }
 }
 
 fun parseStacks(input: List<String>): Map<Int, ArrayDeque<Char>> {
     /*
         Reverse the relevant part of the list before processing
-        This means we know offsets before grabbing stack items,
-        and that we can insert items in a natural way for a stack.
+        This means we know offsets before grabbing stack items (so we don't need a regex),
+        and that we can insert items in the natural way for a stack: bottom up.
      */
     val relevantInput = input.takeWhile { it.isNotBlank() }.asReversed()
     val stackPositions = relevantInput.first()
@@ -67,7 +69,7 @@ fun parseStacks(input: List<String>): Map<Int, ArrayDeque<Char>> {
         .forEach { line ->
             result.entries.forEach { (key, value) ->
                 val item = line[stackPositions[key]!!]
-                if (item.isLetter()) {
+                if (item.isLetter()) { //might be a space if we're above the top of this stack
                     value.addLast(item)
                 }
             }
