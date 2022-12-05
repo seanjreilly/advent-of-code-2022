@@ -21,6 +21,11 @@ class Day05Test {
     }
 
     @Test
+    fun `part2 should parse the stacks and operations, run the rearrangement procedure moving multiple crates without reversing them, and return the top create from each stack`() {
+        assert(part2(sampleInput) == "MCD")
+    }
+
+    @Test
     fun `parseStacks should return an map of ArrayDeques, stopping on a blank line`() {
         val result: Map<Int, ArrayDeque<Char>> = parseStacks(sampleInput)
 

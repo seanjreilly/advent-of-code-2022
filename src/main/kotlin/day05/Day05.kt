@@ -22,7 +22,19 @@ fun part1(input: List<String>): String {
 }
 
 fun part2(input: List<String>): String {
-    return ""
+    val stacks = parseStacks(input)
+    val operations = parseOperations(input)
+    operations.forEach { operation ->
+        val from = stacks[operation.from]!!
+        val to = stacks[operation.to]!!
+
+        //reverse the crates once we pop them from the stack
+        (1..operation.numberToMove)
+            .map { from.removeLast() }
+            .reversed()
+            .forEach(to::addLast)
+    }
+    return joinTopEntryOnEachStackInOrder(stacks)
 }
 
 data class Operation(val numberToMove:Int, val from:Int, val to:Int)
