@@ -4,15 +4,15 @@ import utils.readInput
 
 fun main() {
     val input = readInput("Day06")
-    println(part1(input))
-    println(part2(input))
+    println(part1(input.first()))
+    println(part2(input.first()))
 }
 
-fun part1(input: List<String>): Int {
-    return findMarker(input.first())
+fun part1(input: String): Int {
+    return findMarker(input)
 }
 
-fun part2(input: List<String>): Long {
+fun part2(input: String): Long {
     return 0
 }
 
