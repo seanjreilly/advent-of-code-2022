@@ -23,6 +23,5 @@ fun findMarker(input: String, chunkSize: Int): Int {
             Pair(it, chunk.toCharArray())
         }
         .filter { it.second.distinct().size == chunkSize }
-        .map { it.first }
-        .min()
+        .minOf { it.first }
 }
