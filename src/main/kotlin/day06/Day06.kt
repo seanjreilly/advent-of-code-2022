@@ -12,8 +12,8 @@ fun part1(input: String): Int {
     return findMarker(input, 4)
 }
 
-fun part2(input: String): Long {
-    return 0
+fun part2(input: String): Int {
+    return findMarker(input, 14)
 }
 
 fun findMarker(input: String, chunkSize: Int): Int {

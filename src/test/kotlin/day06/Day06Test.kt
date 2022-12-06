@@ -23,4 +23,9 @@ class Day06Test {
     fun `part1 should return the number of characters read before 4 unique characters are read`() {
         assert(part1("mjqjpqmgbljsphdztnvjfqwrcgsmlb") == 7)
     }
+
+    @Test
+    fun `part2 should return the number of characters read before 14 unique characters are read`() {
+        assert(part2("mjqjpqmgbljsphdztnvjfqwrcgsmlb") == 19)
+    }
 }
