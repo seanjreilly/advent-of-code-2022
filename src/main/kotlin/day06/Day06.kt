@@ -9,20 +9,20 @@ fun main() {
 }
 
 fun part1(input: String): Int {
-    return findMarker(input)
+    return findMarker(input, 4)
 }
 
 fun part2(input: String): Long {
     return 0
 }
 
-fun findMarker(input: String): Int {
-    return (4..input.length)
+fun findMarker(input: String, chunkSize: Int): Int {
+    return (chunkSize..input.length)
         .map {
-            val chunk = input.substring(it-4, it)
+            val chunk = input.substring(it - chunkSize, it)
             Pair(it, chunk.toCharArray())
         }
-        .filter { it.second.distinct().size == 4 }
+        .filter { it.second.distinct().size == chunkSize }
         .map { it.first }
         .min()
 }
