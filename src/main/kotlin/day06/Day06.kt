@@ -17,11 +17,10 @@ fun part2(input: String): Int {
 }
 
 fun findMarker(input: String, chunkSize: Int): Int {
-    return (chunkSize..input.length)
-        .map {
-            val chunk = input.substring(it - chunkSize, it)
-            Pair(it, chunk.toCharArray())
-        }
+    return input.asSequence()
+        .windowed(chunkSize, 1)
+        .mapIndexed { index, chunk -> Pair(index, chunk)}
         .filter { it.second.distinct().size == chunkSize }
-        .minOf { it.first }
+        .map { it.first }
+        .first() + chunkSize //the windows start chunkSize characters in
 }
