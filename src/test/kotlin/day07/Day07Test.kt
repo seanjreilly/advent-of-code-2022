@@ -42,27 +42,26 @@ class Day07Test {
     
     @Test
     fun `parseDirectoryTree should return a directory tree given input`() {
-        val e = Dir("e")
-            .add(File("i", 584))
-
-        val d = Dir("d")
-            .add(File("j", 4060174))
-            .add(File("d.log", 8033020))
-            .add(File("d.ext", 5626152))
-            .add(File("k", 7214296))
-
-
-        val a = Dir("a")
-            .add(File("f", 29116))
-            .add(File("g", 2557))
-            .add(File("h.lst", 62596))
-            .add(e)
-
         val expectedResult = Dir("/")
             .add(File("b.txt", 14848514))
             .add(File("c.dat", 8504156))
-            .add(a)
-            .add(d)
+            .add(
+                Dir("a")
+                    .add(File("f", 29116))
+                    .add(File("g", 2557))
+                    .add(File("h.lst", 62596))
+                    .add(
+                        Dir("e")
+                            .add(File("i", 584))
+                    )
+            )
+            .add(
+                Dir("d")
+                    .add(File("j", 4060174))
+                    .add(File("d.log", 8033020))
+                    .add(File("d.ext", 5626152))
+                    .add(File("k", 7214296))
+            )
 
         val actualResult = parseDirectoryTree(sampleInput)
 
@@ -73,18 +72,20 @@ class Day07Test {
     inner class DirTest {
         @Test
         fun `totalSize should return the total size of all files in this directory or a subdirectory`() {
-            val e = Dir("e")
-                .add(File("i", 584))
-            val a = Dir("a")
-                .add(File("f", 29116))
-                .add(File("g", 2557))
-                .add(File("h.lst", 62596))
-                .add(e)
             val root = Dir("/")
-                .add(a)
+                .add(
+                    Dir("a")
+                        .add(File("f", 29116))
+                        .add(File("g", 2557))
+                        .add(File("h.lst", 62596))
+                        .add(
+                            Dir("e")
+                                .add(File("i", 584))
+                        )
+                )
 
-            assert(e.totalSize == 584L)
-            assert(a.totalSize == 94853L)
+            assert(root.cd("a").cd("e").totalSize == 584L)
+            assert(root.cd("a").totalSize == 94853L)
             assert(root.totalSize == 94853L)
         }
 
