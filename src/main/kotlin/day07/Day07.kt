@@ -10,7 +10,11 @@ fun main() {
 }
 
 fun part1(input: List<String>): Long {
-    return 0
+    val rootDir = parseDirectoryTree(input)
+    return rootDir
+        .subDirs()
+        .filter { it.totalSize <= 100000 }
+        .sumOf { it.totalSize }
 }
 
 fun part2(input: List<String>): Long {

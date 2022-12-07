@@ -31,6 +31,11 @@ class Day07Test {
     """.trimIndent().lines()
 
     @Test
+    fun `part1 should parse the directory tree and return the sum of the total sizes of all directories with a total size of at most 100000 `() {
+        assert(part1(sampleInput) == 95437L)
+    }
+    
+    @Test
     fun `parseDirectoryTree should return a directory tree given input`() {
         val e = Dir("e")
             .add(File("i", 584))
