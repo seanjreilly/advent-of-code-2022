@@ -60,6 +60,12 @@ class Dir(val name: String) {
 
     fun cd(name: String) = dirs.first { it.name == name }
 
+    fun subDirs(): Collection<Dir> = dirs.flatMap { it.subDirs() } + this
+
+    val totalSize: Long by lazy {
+        files.sumOf { it.size } + dirs.sumOf { it.totalSize }
+    }
+
     //region equals and hash code
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

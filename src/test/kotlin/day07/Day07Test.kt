@@ -1,7 +1,7 @@
 package day07
 
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import utils.stack.*
 
 class Day07Test {
     private val sampleInput = """
@@ -59,4 +59,36 @@ class Day07Test {
         assert(expectedResult == actualResult)
     }
 
+    @Nested
+    inner class DirTest {
+        @Test
+        fun `totalSize should return the total size of all files in this directory or a subdirectory`() {
+            val e = Dir("e")
+                .add(File("i", 584))
+            val a = Dir("a")
+                .add(File("f", 29116))
+                .add(File("g", 2557))
+                .add(File("h.lst", 62596))
+                .add(e)
+            val root = Dir("/")
+                .add(a)
+
+            assert(e.totalSize == 584L)
+            assert(a.totalSize == 94853L)
+            assert(root.totalSize == 94853L)
+        }
+
+        @Test
+        fun `subDirs should return the set of this directory and all directories below this one`() {
+            val rootDir = parseDirectoryTree(sampleInput)
+
+            val result:Collection<Dir> = rootDir.subDirs()
+
+            assert(result.size == 4)
+            assert(result.contains(rootDir))
+            assert(result.contains(rootDir.cd("a")))
+            assert(result.contains(rootDir.cd("a").cd("e")))
+            assert(result.contains(rootDir.cd("d")))
+        }
+    }
 }
