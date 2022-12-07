@@ -1,6 +1,7 @@
 package day05
 
 import utils.readInput
+import utils.stack.*
 
 fun main() {
     val input = readInput("Day05")
@@ -15,7 +16,7 @@ fun part1(input: List<String>): String {
         val from = stacks[operation.from]!!
         val to = stacks[operation.to]!!
         repeat(operation.numberToMove) {
-            to.addLast(from.removeLast())
+            to.push(from.pop())
         }
     }
     return joinTopEntryOnEachStackInOrder(stacks)
@@ -30,9 +31,9 @@ fun part2(input: List<String>): String {
 
         //reverse the crates once we pop them from the stack
         (1..operation.numberToMove)
-            .map { from.removeLast() }
+            .map { from.pop() }
             .reversed()
-            .forEach(to::addLast)
+            .forEach(to::push)
     }
     return joinTopEntryOnEachStackInOrder(stacks)
 }
@@ -51,7 +52,7 @@ fun parseOperations(input: List<String>): List<Operation> {
     }
 }
 
-fun parseStacks(input: List<String>): Map<Int, ArrayDeque<Char>> {
+fun parseStacks(input: List<String>): Map<Int, Stack<Char>> {
     /*
         Reverse the relevant part of the list before processing
         This means we know offsets before grabbing stack items (so we don't need a regex),
@@ -63,14 +64,14 @@ fun parseStacks(input: List<String>): Map<Int, ArrayDeque<Char>> {
         .filter { it.second.isDigit() }
         .associate { Pair(it.second.digitToInt(), it.first) } //the map id to the string index
 
-    val result = stackPositions.keys.associateWith { ArrayDeque<Char>() }
+    val result = stackPositions.keys.associateWith { Stack<Char>() }
     relevantInput
         .drop(1) //we've already used this line
         .forEach { line ->
             result.entries.forEach { (key, value) ->
                 val item = line[stackPositions[key]!!]
                 if (item.isLetter()) { //might be a space if we're above the top of this stack
-                    value.addLast(item)
+                    value.push(item)
                 }
             }
         }
@@ -78,7 +79,7 @@ fun parseStacks(input: List<String>): Map<Int, ArrayDeque<Char>> {
     return result
 }
 
-private fun joinTopEntryOnEachStackInOrder(stacks: Map<Int, ArrayDeque<Char>>) = stacks.entries
+private fun joinTopEntryOnEachStackInOrder(stacks: Map<Int, Stack<Char>>) = stacks.entries
     .sortedBy { it.key }
-    .map { it.value.last() }
+    .map { it.value.peek() }
     .joinToString("")

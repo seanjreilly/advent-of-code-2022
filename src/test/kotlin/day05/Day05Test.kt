@@ -1,6 +1,7 @@
 package day05
 
 import org.junit.jupiter.api.Test
+import utils.stack.*
 
 class Day05Test {
     private val sampleInput = """
@@ -27,12 +28,12 @@ class Day05Test {
 
     @Test
     fun `parseStacks should return an map of ArrayDeques, stopping on a blank line`() {
-        val result: Map<Int, ArrayDeque<Char>> = parseStacks(sampleInput)
+        val result: Map<Int, Stack<Char>> = parseStacks(sampleInput)
 
         assert(result.size == 3)
-        assert(result[1] == ArrayDeque(listOf('Z','N')))
-        assert(result[2] == ArrayDeque(listOf('M','C', 'D')))
-        assert(result[3] == ArrayDeque(listOf('P')))
+        assert(result[1] == Stack(listOf('Z','N')))
+        assert(result[2] == Stack(listOf('M','C', 'D')))
+        assert(result[3] == Stack(listOf('P')))
     }
 
     @Test
