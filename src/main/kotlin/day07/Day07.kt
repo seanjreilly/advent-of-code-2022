@@ -18,7 +18,16 @@ fun part1(input: List<String>): Long {
 }
 
 fun part2(input: List<String>): Long {
-    return 0
+    val rootDir = parseDirectoryTree(input)
+    val totalSpace = 70000000L
+    val freeSpace = totalSpace - rootDir.totalSize
+    val neededSpace = 30000000L - freeSpace
+
+    return rootDir
+        .subDirs()
+        .filter { it.totalSize >= neededSpace }
+        .minBy { it.totalSize }
+        .totalSize
 }
 
 fun parseDirectoryTree(input: List<String>): Dir {

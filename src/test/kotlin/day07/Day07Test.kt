@@ -36,6 +36,11 @@ class Day07Test {
     }
     
     @Test
+    fun `part2 should return the total size of the smallest directory that would take free space to at least 30000000`() {
+        assert(part2(sampleInput) == 24933642L)
+    }
+    
+    @Test
     fun `parseDirectoryTree should return a directory tree given input`() {
         val e = Dir("e")
             .add(File("i", 584))
