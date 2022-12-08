@@ -18,6 +18,11 @@ class Day08Test {
         assert(part1(sampleInput) == 21)
     }
 
+    @Test
+    fun `part2 should return the maximum senic score for all trees in the grid`() {
+        assert(part2(sampleInput) == 8)
+    }
+
     @Nested
     inner class ForestMapTest {
 
@@ -102,5 +107,22 @@ class Day08Test {
             assert(Point(1,3) !in visibleTrees)
             assert(Point(3,3) !in visibleTrees)
         }
+
+         @Test
+         fun `getSenicScore should return the product of the viewing distances in each direction`() {
+             val forest = ForestMap(sampleInput)
+
+             val score = forest.getSenicScore(Point(2,1))
+
+             val expectedNorthViewingDistance = 1
+             val expectedWestViewingDistance = 1
+             val expectedSouthViewingDistance = 2
+             val expectedEastViewingDistance = 2
+
+             //score is the product of the viewing distance in each direction
+             assert(score == expectedNorthViewingDistance * expectedWestViewingDistance * expectedSouthViewingDistance * expectedEastViewingDistance)
+
+             assert(forest.getSenicScore(Point(2,3)) == 8)
+         }
     }
 }

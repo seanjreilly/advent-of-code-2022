@@ -15,8 +15,9 @@ fun part1(input: List<String>): Int {
     return ForestMap(input).findVisibleTrees().size
 }
 
-fun part2(input: List<String>): Long {
-    return 0
+fun part2(input: List<String>): Int {
+    val forest = ForestMap(input)
+    return forest.maxOf { forest.getSenicScore(it) }
 }
 
 class ForestMap(rawData: List<String>) : GridMap<Int>(parseTrees(rawData), Point::getCardinalNeighbours) {
@@ -91,6 +92,29 @@ class ForestMap(rawData: List<String>) : GridMap<Int>(parseTrees(rawData), Point
             }
         }
         return result
+    }
+
+    fun getSenicScore(point: Point): Int {
+
+        fun calculateViewingDistance(direction: (Point) -> Point) : Int {
+            var viewingDistance = 0
+            var pt = direction.invoke(point)
+            while(contains(pt)) {
+                viewingDistance++
+                if (this[point] <= this[pt]) {
+                    break
+                }
+                pt = direction.invoke(pt)
+            }
+            return viewingDistance
+        }
+
+        val northViewingDistance = calculateViewingDistance(Point::north)
+        val eastViewingDistance = calculateViewingDistance(Point::east)
+        val southViewingDistance = calculateViewingDistance(Point::south)
+        val westViewingDistance = calculateViewingDistance(Point::west)
+
+        return northViewingDistance * eastViewingDistance * southViewingDistance * westViewingDistance
     }
 
     companion object {
