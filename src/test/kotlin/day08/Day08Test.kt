@@ -109,10 +109,10 @@ class Day08Test {
         }
 
          @Test
-         fun `getSenicScore should return the product of the viewing distances in each direction`() {
+         fun `getScenicScore should return the product of the viewing distances in each direction`() {
              val forest = ForestMap(sampleInput)
 
-             val score = forest.getSenicScore(Point(2,1))
+             val score = forest.getScenicScore(Point(2,1))
 
              val expectedNorthViewingDistance = 1
              val expectedWestViewingDistance = 1
@@ -122,7 +122,7 @@ class Day08Test {
              //score is the product of the viewing distance in each direction
              assert(score == expectedNorthViewingDistance * expectedWestViewingDistance * expectedSouthViewingDistance * expectedEastViewingDistance)
 
-             assert(forest.getSenicScore(Point(2,3)) == 8)
+             assert(forest.getScenicScore(Point(2,3)) == 8)
          }
     }
 }

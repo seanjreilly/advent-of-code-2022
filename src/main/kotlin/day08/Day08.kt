@@ -16,7 +16,7 @@ fun part1(input: List<String>): Int {
 
 fun part2(input: List<String>): Int {
     val forest = ForestMap(input)
-    return forest.maxOf { forest.getSenicScore(it) }
+    return forest.maxOf { forest.getScenicScore(it) }
 }
 
 class ForestMap(rawData: List<String>) : GridMap<Int>(parseTrees(rawData), Point::getCardinalNeighbours) {
@@ -46,7 +46,7 @@ class ForestMap(rawData: List<String>) : GridMap<Int>(parseTrees(rawData), Point
             .toSet()
     }
 
-    fun getSenicScore(point: Point): Int {
+    fun getScenicScore(point: Point): Int {
 
         fun calculateViewingDistance(direction: (Point) -> Point) : Int {
             var viewingDistance = 0
