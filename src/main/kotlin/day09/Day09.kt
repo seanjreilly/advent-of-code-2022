@@ -58,18 +58,17 @@ data class Move(val direction: Direction, val spaces:Int) {
 }
 
 fun Point.updateTailPosition(newHeadPosition: Point): Point {
-    if (isAdjacent(newHeadPosition)) {
-        return this
-    }
-    if (newHeadPosition.x == this.x) {
-        return if (newHeadPosition.y > this.y) { this.south() } else { this.north() }
-    } else if (newHeadPosition.y == this.y) {
-        return if (newHeadPosition.x > this.x) { this.east() } else { this.west() }
-    }
-    if (newHeadPosition.x > this.x) {
-        return if (this.y > newHeadPosition.y) { this.northEast() } else {this.southEast() }
-    } else {
-        return if (this.y > newHeadPosition.y) { this.northWest() } else {this.southWest() }
+    fun northOrSouth() = if (newHeadPosition.y > this.y) { this.south() } else { this.north() }
+    fun eastOrWest() = if (newHeadPosition.x > this.x) { this.east() } else { this.west() }
+    fun northEastOrSouthEast() = if (this.y > newHeadPosition.y) { this.northEast() } else {this.southEast() }
+    fun northWestOrSouthWest() = if (this.y > newHeadPosition.y) { this.northWest() } else {this.southWest() }
+
+    return when {
+        isAdjacent(newHeadPosition) -> this //this knot doesn't need to move if the previous knot overlaps or is adjacent
+        newHeadPosition.x == this.x -> northOrSouth()
+        newHeadPosition.y == this.y -> eastOrWest()
+        newHeadPosition.x > this.x -> northEastOrSouthEast()
+        else -> northWestOrSouthWest()
     }
 }
 
