@@ -29,8 +29,13 @@ class Day09Test {
     """.trimIndent().lines()
 
     @Test
-    fun `part1 should process the moves for a rope with 2 knots and return the number of positions the tail touches`() {
+    fun `part1 should process the moves for a rope with 2 knots and return the number of positions the tail knot touches`() {
         assert(part1(sampleInput) == 13)
+    }
+
+    @Test
+    fun `part2 should process the moves for a rope with 10 knots and return the number of positions the tail knot touches`() {
+        assert(part2(largerSampleInput) == 36)
     }
 
     @Nested
@@ -84,9 +89,14 @@ class Day09Test {
         fun `processMove should work as expected with multiple knots`() {
             val initialRopeState = RopeState(List(10) { Point(0,0) })
             var result = initialRopeState
+            val visitedTailKnotPositions = mutableSetOf<Point>()
             largerSampleInput
                 .map { Move.parse(it) }
-                .forEach { result = result.processMove(it).first }
+                .forEach {
+                    val (newState, tailKnotPositionsVisitedThisTurn) = result.processMove(it)
+                    result = newState
+                    visitedTailKnotPositions += tailKnotPositionsVisitedThisTurn
+                }
 
             assert(result.knotPositions.size == 10)
             assert(result.knotPositions.first() == Point(-11,-15))
@@ -99,6 +109,8 @@ class Day09Test {
             assert(result.knotPositions[7] == result.knotPositions[6].south())
             assert(result.knotPositions[8] == result.knotPositions[7].south())
             assert(result.knotPositions[9] == result.knotPositions[8].south())
+
+            assert (visitedTailKnotPositions.size == 36)
         }
     }
 

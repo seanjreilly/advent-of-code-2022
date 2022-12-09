@@ -11,19 +11,25 @@ fun main() {
 }
 
 fun part1(input: List<String>): Int {
-    val moves = input.map { Move.parse(it) }
-    val visitedTailPositions = mutableSetOf<Point>()
-    var ropeState = RopeState(Point(0,0), Point(0,0)) //starts at the origina with head and tail overlapping
-    moves.forEach { move ->
-        val (newState, newTailPositions) = ropeState.processMove(move)
-        ropeState = newState
-        visitedTailPositions += newTailPositions
-    }
-    return visitedTailPositions.size
+    val ropeState = RopeState(Point(0,0), Point(0,0)) //a two-knot rope starting at the origin with head and tail overlapping
+    return processMoves(input, ropeState)
 }
 
-fun part2(input: List<String>): Long {
-    return 0
+fun part2(input: List<String>): Int {
+    val ropeState = RopeState(List(10) { Point(0,0) }) //a 10-knot rope starting with all knots at the origin
+    return processMoves(input, ropeState)
+}
+
+private fun processMoves(input: List<String>, initialRopeState: RopeState): Int {
+    var ropeState = initialRopeState
+    val moves = input.map { Move.parse(it) }
+    val visitedTailPositions = mutableSetOf<Point>()
+    moves.forEach { move ->
+        val (newState, tailPositionsVisitedThisTurn) = ropeState.processMove(move)
+        ropeState = newState
+        visitedTailPositions += tailPositionsVisitedThisTurn
+    }
+    return visitedTailPositions.size
 }
 
 enum class Direction(val pointMove: (Point) -> Point) {
