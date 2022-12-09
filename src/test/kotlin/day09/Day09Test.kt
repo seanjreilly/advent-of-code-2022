@@ -17,8 +17,19 @@ class Day09Test {
         R 2
     """.trimIndent().lines()
 
+    private val largerSampleInput = """
+        R 5
+        U 8
+        L 8
+        D 3
+        R 17
+        D 10
+        L 25
+        U 20
+    """.trimIndent().lines()
+
     @Test
-    fun `part1 should process the moves and return the number of positions the tail touches`() {
+    fun `part1 should process the moves for a rope with 2 knots and return the number of positions the tail touches`() {
         assert(part1(sampleInput) == 13)
     }
 
@@ -59,14 +70,35 @@ class Day09Test {
             val move = Move(Direction.Right, 4)
             val (newState:RopeState, tailPositions:Set<Point>) = ropeState.processMove(move)
 
-            assert(newState.headPosition == Point(4,0))
-            assert(newState.tailPosition == Point(3,0))
+            assert(newState.knotPositions.first() == Point(4,0))
+            assert(newState.knotPositions.last() == Point(3,0))
 
             assert(tailPositions.size == 4)
             assert(Point(0,0) in tailPositions)
             assert(Point(1,0) in tailPositions)
             assert(Point(2,0) in tailPositions)
             assert(Point(3,0) in tailPositions)
+        }
+
+        @Test
+        fun `processMove should work as expected with multiple knots`() {
+            val initialRopeState = RopeState(List(10) { Point(0,0) })
+            var result = initialRopeState
+            largerSampleInput
+                .map { Move.parse(it) }
+                .forEach { result = result.processMove(it).first }
+
+            assert(result.knotPositions.size == 10)
+            assert(result.knotPositions.first() == Point(-11,-15))
+            assert(result.knotPositions[1] == result.knotPositions.first().south())
+            assert(result.knotPositions[2] == result.knotPositions[1].south())
+            assert(result.knotPositions[3] == result.knotPositions[2].south())
+            assert(result.knotPositions[4] == result.knotPositions[3].south())
+            assert(result.knotPositions[5] == result.knotPositions[4].south())
+            assert(result.knotPositions[6] == result.knotPositions[5].south())
+            assert(result.knotPositions[7] == result.knotPositions[6].south())
+            assert(result.knotPositions[8] == result.knotPositions[7].south())
+            assert(result.knotPositions[9] == result.knotPositions[8].south())
         }
     }
 

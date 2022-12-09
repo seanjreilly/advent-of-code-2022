@@ -71,16 +71,24 @@ fun Point.isAdjacent(otherPoint: Point): Boolean {
     return abs(this.x - otherPoint.x) <= 1 && abs(this.y - otherPoint.y) <= 1
 }
 
-data class RopeState(val headPosition: Point, val tailPosition: Point) {
+data class RopeState(val knotPositions: List<Point>) {
+    constructor(vararg knotPositions: Point) : this(knotPositions.toList())
+
     fun processMove(move: Move): Pair<RopeState, Set<Point>> {
-        val visitedTailPositions = mutableSetOf<Point>(tailPosition)
-        var currentHeadPosition = headPosition
-        var currentTailPosition = tailPosition
+
+        val visitedTailPositions = mutableSetOf<Point>(knotPositions.last())
+        var currentPositions = knotPositions
         repeat(move.spaces) {
-            currentHeadPosition = move.direction.pointMove.invoke(currentHeadPosition)
-            currentTailPosition = currentTailPosition.updateTailPosition(currentHeadPosition)
-            visitedTailPositions += currentTailPosition
+            val newPositions = mutableListOf<Point>()
+            newPositions += move.direction.pointMove.invoke(currentPositions.first()) //update the head with the move instruction
+            //update everything else using updateTailPosition
+            currentPositions.drop(1).forEach {
+                val updatedPosition = it.updateTailPosition(newPositions.last())
+                newPositions += updatedPosition
+            }
+            visitedTailPositions += newPositions.last()
+            currentPositions = newPositions
         }
-        return Pair(RopeState(currentHeadPosition, currentTailPosition), visitedTailPositions)
+        return Pair(RopeState(currentPositions), visitedTailPositions)
     }
 }
