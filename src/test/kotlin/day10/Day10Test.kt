@@ -162,12 +162,27 @@ class Day10Test {
     fun `part1 should return the sum of the signal strengths during cycles 20, 60, 100, 140, 180, and 220`() {
         assert(part1(largerInput) == 13140L)
     }
-    
+
+    @Test
+    fun `part2 should render CRT lines based on the input`() {
+        val expectedOutput = """
+            ##..##..##..##..##..##..##..##..##..##..
+            ###...###...###...###...###...###...###.
+            ####....####....####....####....####....
+            #####.....#####.....#####.....#####.....
+            ######......######......######......####
+            #######.......#######.......#######.....
+        """.trimIndent()
+
+        val result = part2(largerInput)
+        assert (result == expectedOutput)
+    }
+
     @Test
     fun `calculateSignalStrengths should return the cycle number times the register value`() {
         val result: List<Int> = calculateSignalStrengths(sampleInput).toList()
 
-        assert(result == listOf(1, 2, 3, 16, 20, -6))
+        assert(result == listOf(1, 2, 3, 16, 20))
     }
 
     @Test
@@ -175,6 +190,6 @@ class Day10Test {
         //remember this is zero-based, so the value of the register during the 1st cycle is in the zeroth slot
         val result: List<Int> = calculateRegisterValues(sampleInput).toList()
 
-        assert(result == listOf(1,1,1,4,4,-1))
+        assert(result == listOf(1,1,1,4,4))
     }
 }

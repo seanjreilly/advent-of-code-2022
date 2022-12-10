@@ -1,6 +1,7 @@
 package day10
 
 import utils.readInput
+import kotlin.math.abs
 
 fun main() {
     val input = readInput("Day10")
@@ -17,8 +18,13 @@ fun part1(input: List<String>): Long {
 
 }
 
-fun part2(input: List<String>): Long {
-    return 0
+fun part2(input: List<String>): String {
+    return calculateRegisterValues(input)
+        .mapIndexed { index, registerValue -> Pair((index % 40), registerValue) }
+        .map { if (abs(it.first - it.second) <= 1) { '#' } else { '.'} }
+        .chunked(40)
+        .map { it.joinToString("") }
+        .joinToString("\n")
 }
 
 fun calculateSignalStrengths(input: List<String>) = sequence {
@@ -41,5 +47,4 @@ fun calculateRegisterValues(input: List<String>): Sequence<Int> = sequence {
         yield(registerValue) //or during the second cycle, only at the end of the cycle (will be output next time)
         registerValue += incrementValue
     }
-    yield(registerValue) //the register value at the end of the final cycle
 }
