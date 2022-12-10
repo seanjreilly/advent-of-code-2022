@@ -160,7 +160,7 @@ class Day10Test {
 
     @Test
     fun `part1 should return the sum of the signal strengths during cycles 20, 60, 100, 140, 180, and 220`() {
-        assert(part1(largerInput) == 13140L)
+        assert(part1(largerInput) == 13140)
     }
 
     @Test

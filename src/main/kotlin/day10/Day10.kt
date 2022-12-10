@@ -34,15 +34,15 @@ fun calculateSignalStrengths(input: List<String>): Sequence<Int> {
 
 fun calculateRegisterValues(input: List<String>): Sequence<Int> = sequence {
     var registerValue = 1 //the register always starts at 1
-    input.forEach { line ->
-        if (line == "noop") { //noop instruction
-            yield(registerValue) //the value doesn't change during or after the cycle for a noop
-            return@forEach
+    input.forEach { instruction ->
+        when (instruction) {
+            "noop" -> yield(registerValue)
+            else -> { //addX instruction
+                val incrementValue = instruction.substring(5).toInt()
+                yield(registerValue) //the register doesn't change during the first cycle
+                yield(registerValue) //or during the second cycle, only at the end of the cycle (will be output next time)
+                registerValue += incrementValue
+            }
         }
-        //addX instruction
-        val incrementValue = line.substring(5).toInt()
-        yield(registerValue) //the register doesn't change during the first cycle
-        yield(registerValue) //or during the second cycle, only at the end of the cycle (will be output next time)
-        registerValue += incrementValue
     }
 }
