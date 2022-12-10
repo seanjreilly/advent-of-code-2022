@@ -27,11 +27,9 @@ fun part2(input: List<String>): String {
         .joinToString("\n")
 }
 
-fun calculateSignalStrengths(input: List<String>) = sequence {
-    calculateRegisterValues(input)
-        .forEachIndexed { index, registerValue ->
-            yield(registerValue * (index + 1))
-        }
+fun calculateSignalStrengths(input: List<String>): Sequence<Int> {
+    return calculateRegisterValues(input)
+        .mapIndexed { index, registerValue -> registerValue * (index + 1)  } //add 1 because the index is zero-based but cycle count starts at 1
 }
 
 fun calculateRegisterValues(input: List<String>): Sequence<Int> = sequence {
