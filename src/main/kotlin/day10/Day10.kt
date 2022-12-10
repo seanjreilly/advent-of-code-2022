@@ -9,11 +9,10 @@ fun main() {
     println(part2(input))
 }
 
-fun part1(input: List<String>): Long {
+fun part1(input: List<String>): Int {
     val cyclesToSample = setOf(20, 60, 100, 140, 180, 220).map { it - 1 }.toSet() //make it zero-based
     return calculateSignalStrengths(input)
-        .filterIndexed { index, signalStrength -> index in cyclesToSample }
-        .map { it.toLong() }
+        .filterIndexed { index, _ -> index in cyclesToSample }
         .sum()
 
 }
