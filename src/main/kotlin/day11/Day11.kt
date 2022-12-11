@@ -10,7 +10,7 @@ fun main() {
 
 fun part1(input: List<String>): Long {
     val monkeys = parseMonkeys(input)
-    processRounds(monkeys)
+    processRounds(monkeys, 20, ProblemMode.PART1)
     return monkeys
         .map { it.totalNumberOfItemsConsidered }
         .sortedDescending()
@@ -39,7 +39,7 @@ data class SimpleExpression(val first: Operand, val operator: Operator, val seco
             val operator = when (rawOperator) {
                 "+" -> Operator.PLUS
                 "*" -> Operator.TIMES
-                else -> { throw IllegalArgumentException("Unexpected operator ${rawOperator}") }
+                else -> { throw IllegalArgumentException("Unexpected operator $rawOperator") }
             }
             return SimpleExpression(parseOperand(rawFirstOperand), operator, parseOperand(rawSecondOperand))
         }
@@ -48,7 +48,7 @@ data class SimpleExpression(val first: Operand, val operator: Operator, val seco
             return when (raw) {
                 "old" -> Old
                 else -> {
-                    Constant(raw.toLong())
+                    Constant(raw.toInt())
                 }
             }
         }
@@ -62,6 +62,8 @@ sealed interface Operand {
 
 data class Constant(private val value: Long) : Operand {
     override fun getValue(item: Item) = value
+
+    constructor(value:Int) : this(value.toLong())
 }
 
 object Old : Operand {
@@ -69,7 +71,7 @@ object Old : Operand {
 }
 //endregion
 
-data class Item(var worryLevel: Long)
+data class Item(val worryLevel: Long)
 
 fun parseMonkeys(input: List<String>): List<Monkey> {
     return input
@@ -110,22 +112,22 @@ private fun parseMonkey(chunk: List<String>): Monkey {
 data class Monkey(
     val items: MutableList<Item>, //the starting items the monkey has
     val operation: SimpleExpression, //the operation expression — how worry is affected when the monkey examines an item
-    val divisibleBy: Int, //the test is always "is divisible by a divisor", so just track the divisor
+    val divisibleBy: Long, //the test is always "is divisible by a divisor", so just track the divisor
     val testPassesIndex: Int, //the index of the monkey the item is passed to if the test succeeds
-    val testFailsIndex: Int //the index of the monkey the item is passed to if the test fails
+    val testFailsIndex: Int, //the index of the monkey the item is passed to if the test fails
 ) {
-    fun considerItems(): List<Pair<Item, Int>> {
+    fun considerItems(worryAdjuster: WorryAdjuster): List<Pair<Item, Int>> {
+        totalNumberOfItemsConsidered += items.size
         val oldItems = items.toList()
-        totalNumberOfItemsConsidered += oldItems.size
         items.clear()
         return oldItems
             .map { oldItem ->
-                var worryLevel = operation.evaluate(oldItem) //edit the worry level by inspection
-                worryLevel /= 3 // the worry level naturally decreases when the item isn't broken
+                var worryLevel = operation.evaluate(oldItem) //the monkey inspects the item and edits the worry level inspection
+                worryLevel = worryAdjuster.invoke(worryLevel) //the post-inspection adjustment is applied
                 Item(worryLevel)
             }
             .map {
-                val destination = if (it.worryLevel % divisibleBy == 0L) { testPassesIndex } else { testFailsIndex }
+                val destination = if ((it.worryLevel % divisibleBy) == 0L) { testPassesIndex } else { testFailsIndex }
                 Pair(it, destination)
             }
             .toList()
@@ -138,18 +140,33 @@ data class Monkey(
         this(
             itemWorryLevels.map { Item(it.toLong()) }.toMutableList(),
             SimpleExpression.parse(rawOperation),
-            divisibleBy,
+            divisibleBy.toLong(),
             testPassesIndex,
             testFailsIndex
         )
 }
 
-fun processRounds(monkeys: List<Monkey>) {
-    repeat(20) {
+fun processRounds(monkeys: List<Monkey>, numberOfRounds: Int, problemMode:ProblemMode = ProblemMode.PART1) {
+    val worryAdjuster = when (problemMode) {
+        ProblemMode.PART1 -> PART1_WORRY_ADJUSTER
+        ProblemMode.PART2 -> TODO()
+    }
+    repeat(numberOfRounds) { round ->
+        if (round > 0 && (round % 50 == 0)) {
+            println("Processing round $round")
+        }
         monkeys.forEach { monkey ->
-            monkey.considerItems().forEach { (item, destinationMonkey) ->
+            monkey.considerItems(worryAdjuster).forEach { (item, destinationMonkey) ->
                 monkeys[destinationMonkey].items.add(item)
             }
         }
     }
 }
+
+enum class ProblemMode {
+    PART1,
+    PART2
+}
+
+typealias WorryAdjuster = (Long) -> Long
+val PART1_WORRY_ADJUSTER: WorryAdjuster = { it / 3L }

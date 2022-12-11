@@ -1,5 +1,6 @@
 package day11
 
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
@@ -35,9 +36,9 @@ class Day11Test {
     """.trimIndent().lines()
 
     @Test
-    fun `processRounds should pass items from monkey to monkey for 20 rounds`() {
+    fun `processRounds should pass items from monkey to monkey using the part 1 adjuster function for the specified number of rounds`() {
         val monkeys = parseMonkeys(sampleInput)
-        processRounds(monkeys)
+        processRounds(monkeys, 20)
 
         assert(monkeys[0].items == listOf(10, 12, 14, 26, 34).map { it.toLong() }.map(::Item))
         assert(monkeys[1].items == listOf(245, 93, 53, 199, 115).map { it.toLong() }.map(::Item))
@@ -50,6 +51,18 @@ class Day11Test {
         assert(monkeys[3].totalNumberOfItemsConsidered == 105L)
     }
 
+    @Test
+    @Disabled
+    fun `processRounds should also work for an extended number of rounds with the Part 2 adjuster function`() {
+        val monkeys = parseMonkeys(sampleInput)
+        processRounds(monkeys, 1000, ProblemMode.PART2)
+
+        assert(monkeys[0].totalNumberOfItemsConsidered == 5204L)
+        assert(monkeys[1].totalNumberOfItemsConsidered == 4792L)
+        assert(monkeys[2].totalNumberOfItemsConsidered == 199L)
+        assert(monkeys[3].totalNumberOfItemsConsidered == 5192L)
+    }
+    
     @Test
     fun `part1 should pass items from monkey to monkey for 20 rounds and then return the product of the largest 2 numbers of items considered`() {
         assert(part1(sampleInput) == 10605L)
@@ -118,7 +131,7 @@ class Day11Test {
                 0
             )
 
-            val results:List<Pair<Item, Int>> = monkey.considerItems()
+            val results:List<Pair<Item, Int>> = monkey.considerItems(PART1_WORRY_ADJUSTER)
 
             val expectedResults = listOf(
                 Pair(Item(20), 0),
@@ -139,18 +152,18 @@ class Day11Test {
             val monkey = parseMonkeys(sampleInput)[1]
             assert(monkey.items.isNotEmpty()) { "precondition: the monkey must have items before we consider"}
 
-            monkey.considerItems()
+            monkey.considerItems(PART1_WORRY_ADJUSTER)
 
             assert(monkey.items.isEmpty())
         }
 
-        @Test
+        @Test()
         fun `considerItems should increment the total number of items this monkey has considered every time it is called`() {
             val monkey = parseMonkeys(sampleInput)[1]
             val initialItemsSize = monkey.items.size
             assert(initialItemsSize > 0) { "precondition: the monkey must have items before we consider"}
 
-            monkey.considerItems()
+            monkey.considerItems(PART1_WORRY_ADJUSTER)
 
             assert(monkey.totalNumberOfItemsConsidered == initialItemsSize.toLong())
 
@@ -158,7 +171,7 @@ class Day11Test {
             val extraItems = listOf(Item(1), Item(2))
             monkey.items.addAll(extraItems)
 
-            monkey.considerItems()
+            monkey.considerItems(PART1_WORRY_ADJUSTER)
             assert(monkey.totalNumberOfItemsConsidered == (initialItemsSize + extraItems.size).toLong())
         }
     }
