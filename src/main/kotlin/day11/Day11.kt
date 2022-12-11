@@ -9,17 +9,21 @@ fun main() {
 }
 
 fun part1(input: List<String>): Long {
+    return process(input, 20, ProblemMode.PART1)
+}
+
+fun part2(input: List<String>): Long {
+    return process(input, 10000, ProblemMode.PART2)
+}
+
+private fun process(input: List<String>, numberOfRounds: Int, problemMode: ProblemMode): Long {
     val monkeys = parseMonkeys(input)
-    processRounds(monkeys, 20, ProblemMode.PART1)
+    processRounds(monkeys, numberOfRounds, problemMode)
     return monkeys
         .map { it.totalNumberOfItemsConsidered }
         .sortedDescending()
         .take(2)
         .reduce(Long::times)
-}
-
-fun part2(input: List<String>): Long {
-    return 0
 }
 
 enum class Operator(val operation: (Long, Long) -> Long) {
@@ -149,12 +153,12 @@ data class Monkey(
 fun processRounds(monkeys: List<Monkey>, numberOfRounds: Int, problemMode:ProblemMode = ProblemMode.PART1) {
     val worryAdjuster = when (problemMode) {
         ProblemMode.PART1 -> PART1_WORRY_ADJUSTER
-        ProblemMode.PART2 -> TODO()
+        ProblemMode.PART2 -> {
+            val commonMultiple = monkeys.map { it.divisibleBy }.reduce(Long::times);
+            { worryLevel -> worryLevel % commonMultiple } //mod the value by the common multiple of all divisors to prevent Long overflows
+        }
     }
     repeat(numberOfRounds) { round ->
-        if (round > 0 && (round % 50 == 0)) {
-            println("Processing round $round")
-        }
         monkeys.forEach { monkey ->
             monkey.considerItems(worryAdjuster).forEach { (item, destinationMonkey) ->
                 monkeys[destinationMonkey].items.add(item)

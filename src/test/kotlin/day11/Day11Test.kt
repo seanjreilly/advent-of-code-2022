@@ -1,6 +1,5 @@
 package day11
 
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
@@ -36,7 +35,7 @@ class Day11Test {
     """.trimIndent().lines()
 
     @Test
-    fun `processRounds should pass items from monkey to monkey using the part 1 adjuster function for the specified number of rounds`() {
+    fun `processRounds should pass items from monkey to monkey for the specified number of rounds in part1 mode`() {
         val monkeys = parseMonkeys(sampleInput)
         processRounds(monkeys, 20)
 
@@ -52,22 +51,25 @@ class Day11Test {
     }
 
     @Test
-    @Disabled
-    fun `processRounds should also work for an extended number of rounds with the Part 2 adjuster function`() {
+    fun `processRounds should also work for an extended number of rounds in Part 2 mode`() {
         val monkeys = parseMonkeys(sampleInput)
-        processRounds(monkeys, 1000, ProblemMode.PART2)
+        processRounds(monkeys, 10000, ProblemMode.PART2)
 
-        assert(monkeys[0].totalNumberOfItemsConsidered == 5204L)
-        assert(monkeys[1].totalNumberOfItemsConsidered == 4792L)
-        assert(monkeys[2].totalNumberOfItemsConsidered == 199L)
-        assert(monkeys[3].totalNumberOfItemsConsidered == 5192L)
+        assert(monkeys[0].totalNumberOfItemsConsidered == 52166L)
+        assert(monkeys[1].totalNumberOfItemsConsidered == 47830L)
+        assert(monkeys[2].totalNumberOfItemsConsidered == 1938L)
+        assert(monkeys[3].totalNumberOfItemsConsidered == 52013L)
     }
     
     @Test
-    fun `part1 should pass items from monkey to monkey for 20 rounds and then return the product of the largest 2 numbers of items considered`() {
+    fun `part1 should process 20 rounds in part 1 mode and then return the product of the largest 2 numbers of items considered`() {
         assert(part1(sampleInput) == 10605L)
     }
 
+    @Test
+    fun `part2 should process 20 rounds in part 2 mode and then return the product of the largest 2 numbers of items considered`() {
+        assert(part2(sampleInput) == 2713310158L)
+    }
 
     @Test
     fun `parseMonkeys should return a list of Monkey instances`() {
