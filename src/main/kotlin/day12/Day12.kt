@@ -112,8 +112,7 @@ class HeightMap(data: Array<Array<Int>>, val startPoint: Point, val endPoint: Po
         //find the distance from each height zero point and return the minimum distance
         return this
             .filter { this[it] == 0 }
-            .map { tentativeDistances[it]!! }
-            .min()
+            .minOf { tentativeDistances[it]!! }
     }
 
     companion object {
