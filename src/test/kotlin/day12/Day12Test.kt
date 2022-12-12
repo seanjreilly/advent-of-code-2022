@@ -15,13 +15,11 @@ class Day12Test {
 
     @Test
     fun `part1 should return the number of steps in the shortest path from startPoint to endPoint`() {
-        val map = HeightMap.parse(sampleInput)
-        val expectedNumberOfSteps = map.findShortestPathToEndPointFromStartPoint().size - 1 //start point doesn't count as a step
-        assert(part1(sampleInput) == expectedNumberOfSteps)
+        assert(part1(sampleInput) == 31)
     }
 
     @Test
-    fun `part2 should run Djikstra's for _every_ point with height zero and return the shortest number of steps`() {
+    fun `part2 should run Djikstra's and return the shortest number of steps to endPoint from _any_ point with height zero`() {
         assert(part2(sampleInput) == 29)
     }
 
@@ -53,22 +51,11 @@ class Day12Test {
         }
 
         @Test
-        fun `findShortestPathToEndPointFromStartPoint should use Djikstra's algorithm to return the shortest path from the designated startPoint to endPoint that only moves to points at most one higher than the current point`() {
+        fun `findShortestNumberOfStepsToEndPoint should use Djikstra's algorithm to return the shortest path from the designated startPoint to endPoint that only moves to points at most one higher than the current point`() {
             val map = HeightMap.parse(sampleInput)
 
-            val result:Path = map.findShortestPathToEndPointFromStartPoint()
-            assert(result.size == 32) //shortest possible path from the example text
-            assert(result.first() == map.startPoint)
-            assert(result.last() == map.endPoint)
-
-            //check how each node in the path compares to the next one
-            result
-                .windowed(2, 1)
-                .map { Pair(it.first(), it.last()) }
-                .forEach { (thisPoint, nextPoint) ->
-                    assert(nextPoint in thisPoint.getCardinalNeighbours()) { "path must move between neighbours" }
-                    assert(map[thisPoint] + 1 >= map[nextPoint]) { "path must never climb 2 or more" }
-                }
+            val result = map.findShortestNumberOfStepsToEndPoint(listOf(map.startPoint))
+            assert(result == 31) //shortest possible number of steps from the example text
         }
 
         @Test
