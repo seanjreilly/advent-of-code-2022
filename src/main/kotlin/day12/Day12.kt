@@ -12,7 +12,8 @@ fun main() {
 }
 
 fun part1(input: List<String>): Int {
-    return HeightMap.parse(input).findShortestPathToEndPointFromStartPoint().size - 1
+    val map = HeightMap.parse(input)
+    return map.findShortestNumberOfStepsToEndPoint(listOf(map.startPoint))
 }
 
 fun part2(input: List<String>): Int {
