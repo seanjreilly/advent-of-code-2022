@@ -12,21 +12,19 @@ fun main() {
 }
 
 fun part1(input: List<String>): Int {
-    val map = HeightMap.parse(input)
-    return map.findShortestPathToEndPointFrom(map.startPoint).size - 1
+    return HeightMap.parse(input).findShortestPathToEndPointFromStartPoint().size - 1
 }
 
 fun part2(input: List<String>): Int {
-    val map = HeightMap.parse(input)
-    return map.findShortestNumberOfStepsFromAnyHeightZeroSquareToEndPoint()
+    return HeightMap.parse(input).findShortestNumberOfStepsFromAnyHeightZeroSquareToEndPoint()
 }
 
 class HeightMap(data: Array<Array<Int>>, val startPoint: Point, val endPoint: Point) : GridMap<Int>(data, Point::getCardinalNeighbours) {
 
-    fun findShortestPathToEndPointFrom(startingPoint: Point): Path {
+    fun findShortestPathToEndPointFromStartPoint(): Path {
         //Djikstra's algorithm
         val tentativeDistances = this.associateWith { Int.MAX_VALUE }.toMutableMap()
-        tentativeDistances[startingPoint] = 0
+        tentativeDistances[startPoint] = 0
 
         val unvisitedPoints = PriorityQueue<Pair<Point, Int>>(compareBy { it.second })
         tentativeDistances.forEach { (point, distance) ->
@@ -70,8 +68,8 @@ class HeightMap(data: Array<Array<Int>>, val startPoint: Point, val endPoint: Po
         do {
             shortestPath.add(currentPoint)
             currentPoint = cheapestNeighbour[currentPoint]!!
-        } while (currentPoint != startingPoint)
-        shortestPath.add(startingPoint)
+        } while (currentPoint != startPoint)
+        shortestPath.add(startPoint)
         return shortestPath.reversed()
     }
 
