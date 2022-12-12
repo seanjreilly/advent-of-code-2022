@@ -72,17 +72,17 @@ class Day12Test {
         }
 
         @Test
-        fun `findShortestNumberOfStepsFromAnyHeightZeroSquareToEndPoint should use Djikstra's to return the shortest path from _any_ square of height zero to endPoint`() {
+        fun `findShortestNumberOfStepsToEndPoint should use Djikstra's to return the shortest path from _any_ square of height zero to endPoint`() {
             val map = HeightMap.parse(sampleInput)
 
-            assert(map.findShortestNumberOfStepsFromAnyHeightZeroSquareToEndPoint() == 29)
+            assert(map.findShortestNumberOfStepsToEndPoint(map.filter { map[it] == 0 }) == 29)
         }
 
         @Test
-        fun `findShortestNumberOfStepsFromAnyHeightZeroSquareToEndPoint should gracefully handle squares of height zero that cannot reach endPoint`() {
+        fun `findShortestNumberOfStepsToEndPoint should gracefully handle squares of height zero that cannot reach endPoint`() {
             // the first a and the start square can reach endPoint in 25 and 26 moves respectively,
-            // but the last two as cannot climb the cliff and reach the End
-            // an unreachable point next to another unreachable point triggers the bug I found
+            // but the last two as cannot climb the cliff and reach endPoint
+            // (two because an unreachable point next to another unreachable point triggers the overflow bug I found)
 
             val input = """
                 Sabcde
@@ -94,7 +94,7 @@ class Day12Test {
 
             val map = HeightMap.parse(input)
 
-            val result = map.findShortestNumberOfStepsFromAnyHeightZeroSquareToEndPoint()
+            val result = map.findShortestNumberOfStepsToEndPoint(map.filter { map[it] == 0 })
             assert(result == 26)
         }
     }

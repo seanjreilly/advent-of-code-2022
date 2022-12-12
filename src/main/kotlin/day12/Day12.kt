@@ -16,7 +16,9 @@ fun part1(input: List<String>): Int {
 }
 
 fun part2(input: List<String>): Int {
-    return HeightMap.parse(input).findShortestNumberOfStepsFromAnyHeightZeroSquareToEndPoint()
+    val map = HeightMap.parse(input)
+    val squaresOfHeightZero = map.filter { map[it] == 0 }
+    return map.findShortestNumberOfStepsToEndPoint(squaresOfHeightZero)
 }
 
 class HeightMap(data: Array<Array<Int>>, val startPoint: Point, val endPoint: Point) : GridMap<Int>(data, Point::getCardinalNeighbours) {
@@ -73,7 +75,7 @@ class HeightMap(data: Array<Array<Int>>, val startPoint: Point, val endPoint: Po
         return shortestPath.reversed()
     }
 
-    fun findShortestNumberOfStepsFromAnyHeightZeroSquareToEndPoint() : Int {
+    fun findShortestNumberOfStepsToEndPoint(startingPoints: Collection<Point>): Int {
         //Djikstra's algorithm in reverse from endPoint to every other reachable point
         val tentativeDistances = this.associateWith { Int.MAX_VALUE }.toMutableMap()
         tentativeDistances[endPoint] = 0
@@ -115,8 +117,7 @@ class HeightMap(data: Array<Array<Int>>, val startPoint: Point, val endPoint: Po
 
         //tentativePoints now has a distance from endPoint to every other reachable point
         //find the distance from each height zero point and return the minimum distance
-        return this
-            .filter { this[it] == 0 }
+        return startingPoints
             .minOf { tentativeDistances[it]!! }
     }
 
