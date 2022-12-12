@@ -70,5 +70,12 @@ class Day12Test {
                     assert(map[thisPoint] + 1 >= map[nextPoint]) { "path must never climb 2 or more" }
                 }
         }
+
+        @Test
+        fun `findShortestNumberOfStepsFromAnyHeightZeroSquareToEndPoint should use Djikstra's to return the shortest path from _any_ square of height zero to endPoint`() {
+            val map = HeightMap.parse(sampleInput)
+
+            assert(map.findShortestNumberOfStepsFromAnyHeightZeroSquareToEndPoint() == 29)
+        }
     }
 }

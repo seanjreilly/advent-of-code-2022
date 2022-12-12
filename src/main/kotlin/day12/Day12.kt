@@ -18,19 +18,7 @@ fun part1(input: List<String>): Int {
 
 fun part2(input: List<String>): Int {
     val map = HeightMap.parse(input)
-    return map
-        .filter { map[it] == 0 }
-        .map {
-            try {
-                map.findShortestPathToEndPointFrom(it)
-            } catch (e: Exception) {
-                //this means there's no path from this start point to the end point
-                //skip it
-                null
-            }
-        }
-        .filterNotNull()
-        .minOf { it.size - 1 }
+    return map.findShortestNumberOfStepsFromAnyHeightZeroSquareToEndPoint()
 }
 
 class HeightMap(data: Array<Array<Int>>, val startPoint: Point, val endPoint: Point) : GridMap<Int>(data, Point::getCardinalNeighbours) {
@@ -85,6 +73,49 @@ class HeightMap(data: Array<Array<Int>>, val startPoint: Point, val endPoint: Po
         } while (currentPoint != startingPoint)
         shortestPath.add(startingPoint)
         return shortestPath.reversed()
+    }
+
+    fun findShortestNumberOfStepsFromAnyHeightZeroSquareToEndPoint() : Int {
+        //Djikstra's algorithm in reverse from endPoint to every other reachable point
+        val tentativeDistances = this.associateWith { Int.MAX_VALUE }.toMutableMap()
+        tentativeDistances[endPoint] = 0
+
+        val unvisitedPoints = PriorityQueue<Pair<Point, Int>>(compareBy { it.second })
+        tentativeDistances.forEach { (point, distance) ->
+            unvisitedPoints.add(Pair(point, distance))
+        }
+
+        val visitedPoints = mutableSetOf<Point>()
+
+        while (unvisitedPoints.isNotEmpty()) {
+            val currentPoint = unvisitedPoints.remove().first
+
+            //do an extra filter to remove the duplicate entries from the priority queue (see below)
+            if (currentPoint in visitedPoints) {
+                continue
+            }
+
+            visitedPoints += currentPoint
+
+            getNeighbours(currentPoint)
+                .filter { it !in visitedPoints }
+                .filter { this[currentPoint] <= this[it] + 1 } //enforce the "can only go up 1 level" rule in reverse because we're going backwards
+                .forEach { point ->
+                    val currentDistanceToPoint = tentativeDistances[point]!!
+                    val altDistance = tentativeDistances[currentPoint]!! + 1
+                    if (altDistance in 1 until currentDistanceToPoint) { //filter out unreachable points and more expensive paths
+                        tentativeDistances[point] = altDistance
+                        unvisitedPoints.add(Pair(point, altDistance)) //don't remove the old point (slow), just leave a duplicate entry
+                    }
+                }
+        }
+
+        //tentativePoints now has a distance from endPoint to every other reachable point
+        //find the distance from each height zero point and return the minimum distance
+        return this
+            .filter { this[it] == 0 }
+            .map { tentativeDistances[it]!! }
+            .min()
     }
 
     companion object {
