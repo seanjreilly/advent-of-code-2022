@@ -53,18 +53,6 @@ class Day12Test {
         }
 
         @Test
-        fun `getNeighbours should only return points at most one taller than the current point`() {
-            val point = Point(2, 0)
-            val map = HeightMap.parse(sampleInput)
-
-            val result = map.getNeighbours(point)
-            assert(Point(1,0) in result) //one lower
-            assert(Point(2,1) in result) //one higher
-            assert(Point(3,0) !in result) //much higher
-            assert(result.size ==2)
-        }
-
-        @Test
         fun `findShortestPathToEndPointFrom should use Djikstra's algorithm to return the shortest path from the designated startPoint to endPoint that only moves to points at most one higher than the current point`() {
             val map = HeightMap.parse(sampleInput)
 

@@ -35,11 +35,6 @@ fun part2(input: List<String>): Int {
 
 class HeightMap(data: Array<Array<Int>>, val startPoint: Point, val endPoint: Point) : GridMap<Int>(data, Point::getCardinalNeighbours) {
 
-    override fun getNeighbours(point: Point): Collection<Point> {
-        val currentPointHeight = this[point]
-        return super.getNeighbours(point).filter { this[it] <= currentPointHeight + 1 }
-    }
-
     fun findShortestPathToEndPointFrom(startingPoint: Point): Path {
         //Djikstra's algorithm
         val tentativeDistances = this.associateWith { Int.MAX_VALUE }.toMutableMap()
@@ -69,6 +64,7 @@ class HeightMap(data: Array<Array<Int>>, val startPoint: Point, val endPoint: Po
 
             getNeighbours(currentPoint)
                 .filter { it !in visitedPoints }
+                .filter { this[it] <= this[currentPoint] + 1 } //enforce the "can only go up 1 level" rule here
                 .forEach { point ->
                     val currentDistanceToPoint = tentativeDistances[point]!!
                     val altDistance = tentativeDistances[currentPoint]!! + 1
