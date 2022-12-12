@@ -65,7 +65,7 @@ class HeightMap(data: Array<Array<Int>>, val startPoint: Point, val endPoint: Po
         }
 
         //tentativePoints now has a distance from endPoint to every other reachable point
-        //find the distance from each height zero point and return the minimum distance
+        //find the distance from each potential starting point and return the minimum distance
         return startingPoints
             .minOf { tentativeDistances[it]!! }
     }
