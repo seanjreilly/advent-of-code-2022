@@ -12,11 +12,25 @@ fun main() {
 }
 
 fun part1(input: List<String>): Int {
-    return HeightMap.parse(input).findShortestPathToEndPoint().size - 1
+    val map = HeightMap.parse(input)
+    return map.findShortestPathToEndPointFrom(map.startPoint).size - 1
 }
 
-fun part2(input: List<String>): Long {
-    return 0
+fun part2(input: List<String>): Int {
+    val map = HeightMap.parse(input)
+    return map
+        .filter { map[it] == 0 }
+        .map {
+            try {
+                map.findShortestPathToEndPointFrom(it)
+            } catch (e: Exception) {
+                //this means there's no path from this start point to the end point
+                //skip it
+                null
+            }
+        }
+        .filterNotNull()
+        .minOf { it.size - 1 }
 }
 
 class HeightMap(data: Array<Array<Int>>, val startPoint: Point, val endPoint: Point) : GridMap<Int>(data, Point::getCardinalNeighbours) {
@@ -26,10 +40,10 @@ class HeightMap(data: Array<Array<Int>>, val startPoint: Point, val endPoint: Po
         return super.getNeighbours(point).filter { this[it] <= currentPointHeight + 1 }
     }
 
-    fun findShortestPathToEndPoint(): Path {
+    fun findShortestPathToEndPointFrom(startingPoint: Point): Path {
         //Djikstra's algorithm
         val tentativeDistances = this.associateWith { Int.MAX_VALUE }.toMutableMap()
-        tentativeDistances[startPoint] = 0
+        tentativeDistances[startingPoint] = 0
 
         val unvisitedPoints = PriorityQueue<Pair<Point, Int>>(compareBy { it.second })
         tentativeDistances.forEach { (point, distance) ->
@@ -72,8 +86,8 @@ class HeightMap(data: Array<Array<Int>>, val startPoint: Point, val endPoint: Po
         do {
             shortestPath.add(currentPoint)
             currentPoint = cheapestNeighbour[currentPoint]!!
-        } while (currentPoint != startPoint)
-        shortestPath.add(startPoint)
+        } while (currentPoint != startingPoint)
+        shortestPath.add(startingPoint)
         return shortestPath.reversed()
     }
 

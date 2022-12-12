@@ -16,8 +16,13 @@ class Day12Test {
     @Test
     fun `part1 should return the number of steps in the shortest path from startPoint to endPoint`() {
         val map = HeightMap.parse(sampleInput)
-        val expectedNumberOfSteps = map.findShortestPathToEndPoint().size - 1 //start point doesn't count as a step
+        val expectedNumberOfSteps = map.findShortestPathToEndPointFrom(map.startPoint).size - 1 //start point doesn't count as a step
         assert(part1(sampleInput) == expectedNumberOfSteps)
+    }
+
+    @Test
+    fun `part2 should run Djikstra's for _every_ point with height zero and return the shortest number of steps`() {
+        assert(part2(sampleInput) == 29)
     }
 
     @Nested
@@ -60,10 +65,10 @@ class Day12Test {
         }
 
         @Test
-        fun `findShortestPathToEndPoint should use Djikstra's algorithm to return the shortest path from startPoint to endPoint that only moves to points at most one higher than the current point`() {
+        fun `findShortestPathToEndPointFrom should use Djikstra's algorithm to return the shortest path from the designated startPoint to endPoint that only moves to points at most one higher than the current point`() {
             val map = HeightMap.parse(sampleInput)
 
-            val result:Path = map.findShortestPathToEndPoint()
+            val result:Path = map.findShortestPathToEndPointFrom(map.startPoint)
             assert(result.size == 32) //shortest possible path from the example text
             assert(result.first() == map.startPoint)
             assert(result.last() == map.endPoint)
