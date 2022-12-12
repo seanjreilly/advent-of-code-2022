@@ -95,13 +95,18 @@ class HeightMap(data: Array<Array<Int>>, val startPoint: Point, val endPoint: Po
 
             visitedPoints += currentPoint
 
+            val distanceToCurrentPoint = tentativeDistances[currentPoint]!!
+            if (distanceToCurrentPoint == Int.MAX_VALUE) {
+                break //we've reached an unreachable point
+            }
+
             getNeighbours(currentPoint)
                 .filter { it !in visitedPoints }
                 .filter { this[currentPoint] <= this[it] + 1 } //enforce the "can only go up 1 level" rule in reverse because we're going backwards
                 .forEach { point ->
                     val currentDistanceToPoint = tentativeDistances[point]!!
-                    val altDistance = tentativeDistances[currentPoint]!! + 1
-                    if (altDistance in 1 until currentDistanceToPoint) { //filter out unreachable points and more expensive paths
+                    val altDistance = distanceToCurrentPoint + 1
+                    if (altDistance < currentDistanceToPoint) { //filter out more expensive paths
                         tentativeDistances[point] = altDistance
                         unvisitedPoints.add(Pair(point, altDistance)) //don't remove the old point (slow), just leave a duplicate entry
                     }

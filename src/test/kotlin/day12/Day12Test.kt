@@ -77,5 +77,25 @@ class Day12Test {
 
             assert(map.findShortestNumberOfStepsFromAnyHeightZeroSquareToEndPoint() == 29)
         }
+
+        @Test
+        fun `findShortestNumberOfStepsFromAnyHeightZeroSquareToEndPoint should gracefully handle squares of height zero that cannot reach endPoint`() {
+            // the first a and the start square can reach endPoint in 25 and 26 moves respectively,
+            // but the last two as cannot climb the cliff and reach the End
+            // an unreachable point next to another unreachable point triggers the bug I found
+
+            val input = """
+                Sabcde
+                kjihgf
+                lmnopq
+                wvutsr
+                xyzEaa
+            """.trimIndent().lines()
+
+            val map = HeightMap.parse(input)
+
+            val result = map.findShortestNumberOfStepsFromAnyHeightZeroSquareToEndPoint()
+            assert(result == 26)
+        }
     }
 }
