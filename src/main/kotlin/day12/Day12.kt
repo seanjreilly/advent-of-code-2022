@@ -24,58 +24,6 @@ fun part2(input: List<String>): Int {
 
 class HeightMap(data: Array<Array<Int>>, val startPoint: Point, val endPoint: Point) : GridMap<Int>(data, Point::getCardinalNeighbours) {
 
-    fun findShortestPathToEndPointFromStartPoint(): Path {
-        //Djikstra's algorithm
-        val tentativeDistances = this.associateWith { Int.MAX_VALUE }.toMutableMap()
-        tentativeDistances[startPoint] = 0
-
-        val unvisitedPoints = PriorityQueue<Pair<Point, Int>>(compareBy { it.second })
-        tentativeDistances.forEach { (point, distance) ->
-            unvisitedPoints.add(Pair(point, distance))
-        }
-
-        val cheapestNeighbour = mutableMapOf<Point, Point>()
-        val visitedPoints = mutableSetOf<Point>()
-
-        while (unvisitedPoints.isNotEmpty()) {
-            val currentPoint = unvisitedPoints.remove().first
-
-            //do an extra filter to remove the duplicate entries from the priority queue (see below)
-            if (currentPoint in visitedPoints) {
-                continue
-            }
-
-            visitedPoints += currentPoint
-
-            if (currentPoint == endPoint) {
-                break
-            }
-
-            getNeighbours(currentPoint)
-                .filter { it !in visitedPoints }
-                .filter { this[it] <= this[currentPoint] + 1 } //enforce the "can only go up 1 level" rule here
-                .forEach { point ->
-                    val currentDistanceToPoint = tentativeDistances[point]!!
-                    val altDistance = tentativeDistances[currentPoint]!! + 1
-                    if (altDistance < currentDistanceToPoint) {
-                        tentativeDistances[point] = altDistance
-                        cheapestNeighbour[point] = currentPoint
-                        unvisitedPoints.add(Pair(point, altDistance)) //don't remove the old point (slow), just leave a duplicate entry
-                    }
-                }
-        }
-
-        //unroll weights to find the cheapest path
-        val shortestPath = emptyList<Point>().toMutableList()
-        var currentPoint = endPoint
-        do {
-            shortestPath.add(currentPoint)
-            currentPoint = cheapestNeighbour[currentPoint]!!
-        } while (currentPoint != startPoint)
-        shortestPath.add(startPoint)
-        return shortestPath.reversed()
-    }
-
     fun findShortestNumberOfStepsToEndPoint(startingPoints: Collection<Point>): Int {
         //Djikstra's algorithm in reverse from endPoint to every other reachable point
         val tentativeDistances = this.associateWith { Int.MAX_VALUE }.toMutableMap()
@@ -155,5 +103,3 @@ class HeightMap(data: Array<Array<Int>>, val startPoint: Point, val endPoint: Po
         //endregion
     }
 }
-
-typealias Path = List<Point>
