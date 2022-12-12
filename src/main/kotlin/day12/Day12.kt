@@ -78,8 +78,8 @@ class HeightMap(data: Array<Array<Int>>, val startPoint: Point, val endPoint: Po
             val endPoint = findInCharacters(END_POINT_MARKER, characters)
 
             val data = characters
-                .mapIndexed {y, line ->
-                    line.mapIndexed {x, char ->
+                .map { line ->
+                    line.map { char ->
                         when(char) {
                             START_POINT_MARKER -> { 0 }
                             END_POINT_MARKER -> { 25 }
