@@ -93,20 +93,21 @@ fun checkOrder(left:List<Any>, right:List<Any>): CheckResult {
     if (right.isEmpty()) {
         return CheckResult.WrongOrder
     }
-    val result: CheckResult
     val leftItem = left.first()
     val rightItem = right.first()
-    if (leftItem is Int) {
+
+    //too bad we don't have dynamic types here
+    val result = if (leftItem is Int) {
         if (rightItem is Int) {
-            result = checkOrder(leftItem, rightItem)
+            checkOrder(leftItem, rightItem)
         } else {
-            result = checkOrder(leftItem, rightItem as List<Any>)
+            checkOrder(leftItem, rightItem as List<Any>)
         }
     } else {
          if (rightItem is Int) {
-             result = checkOrder(leftItem as List<Any>, rightItem)
+             checkOrder(leftItem as List<Any>, rightItem)
          } else {
-             result = checkOrder(leftItem as List<Any>, rightItem as List<Any>)
+             checkOrder(leftItem as List<Any>, rightItem as List<Any>)
          }
     }
     if (result != CheckResult.ContinueChecking) {
