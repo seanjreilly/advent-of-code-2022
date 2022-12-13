@@ -34,7 +34,43 @@ class Day13Test {
 
     @Test
     fun `part1 should return the sum of the (one-based) indicies that are in the correct order`() {
-        assert(part1(sampleInput) == 13L)
+        assert(part1(sampleInput) == 13)
+    }
+
+    @Test
+    fun `part2 should add the divider packets to the input, sort the input, and return the product of the indexes of the divder packets in the sorted results`() {
+        assert(part2(sampleInput) == 10 * 14)
+    }
+
+    @Test
+    fun `sortPackets should sort the packets so that they are in correct order`() {
+        val expectedResult = """
+            []
+            [[]]
+            [[[]]]
+            [1,1,3,1,1]
+            [1,1,5,1,1]
+            [[1],[2,3,4]]
+            [1,[2,[3,[4,[5,6,0]]]],8,9]
+            [1,[2,[3,[4,[5,6,7]]]],8,9]
+            [[1],4]
+            [[2]]
+            [3]
+            [[4,4],4,4]
+            [[4,4],4,4,4]
+            [[6]]
+            [7,7,7]
+            [7,7,7,7]
+            [[8,7,6]]
+            [9]
+        """.trimIndent().lines()
+            .map { parse(it) }
+
+        val input = (sampleInput.filter { it.isNotEmpty() } + dividerPackets).map { parse(it) }
+
+        val result = sortPackets(input)
+
+        assert(result == expectedResult)
     }
 
     @Test

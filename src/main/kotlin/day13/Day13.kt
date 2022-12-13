@@ -9,7 +9,7 @@ fun main() {
     println(part2(input))
 }
 
-fun part1(input: List<String>): Long {
+fun part1(input: List<String>): Int {
     return input.windowed(3, 3, true) //skip the blank lines
         .map { lines ->
             val (left, right) = lines
@@ -17,12 +17,23 @@ fun part1(input: List<String>): Long {
         }
         .mapIndexed(::Pair)
         .filter { it.second == CheckResult.CorrectOrder }
-        .sumOf { it.first.toLong() + 1 } //the problem considers the indices to be 1-based
+        .sumOf { it.first + 1 } //the problem considers the indices to be 1-based
 }
 
-fun part2(input: List<String>): Long {
-    return 0
+fun part2(input: List<String>): Int {
+    val parsedDividerPackets = dividerPackets.map { parse(it) }
+    val part2Input = input.filter { it.isNotEmpty() }.map { parse(it) } + parsedDividerPackets
+    val sortedPackets = sortPackets(part2Input)
+    //indexes are 1-based in this problem
+    val firstDividerPacketIndex = sortedPackets.indexOf(parsedDividerPackets[0]) + 1
+    val secondDividerPacketIndex = sortedPackets.indexOf(parsedDividerPackets[1]) + 1
+    return firstDividerPacketIndex * secondDividerPacketIndex
 }
+
+val dividerPackets = """
+    [[2]]
+    [[6]]
+""".trimIndent().lines()
 
 fun parse(input:String) : List<Any> {
     return parseListContents(input.substring(1, input.length - 1))
@@ -39,7 +50,7 @@ private fun parseListContents(input:String) : List<Any> {
     var startIndex = 0
 
     fun parseChunk(chunk:String) {
-        //the chunk is either a list or an int
+        //the chunk is either a list or an int. If it's a list it starts with [
         if (chunk.startsWith('[')) {
             result.add(parse(chunk))
         } else {
@@ -116,4 +127,14 @@ enum class CheckResult {
     CorrectOrder,
     WrongOrder,
     ContinueChecking
+}
+
+fun sortPackets(input: List<List<Any>>): List<List<Any>> {
+    return input.sortedWith { left:List<Any>, right:List<Any> ->
+        when(checkOrder(left, right)) {
+            CheckResult.CorrectOrder -> -1
+            CheckResult.WrongOrder -> 1
+            CheckResult.ContinueChecking -> 0
+        }
+    }
 }
