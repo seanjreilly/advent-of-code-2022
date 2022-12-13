@@ -1,9 +1,6 @@
 package day13
 
 import org.junit.jupiter.api.Test
-import utils.stack.Stack
-import utils.stack.pop
-import utils.stack.push
 
 class Day13Test {
     private val sampleInput = """
