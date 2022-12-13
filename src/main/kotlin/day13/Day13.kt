@@ -124,18 +124,12 @@ fun checkOrder(left: Int, right: Int) : CheckResult {
         else -> CheckResult.ContinueChecking
     }
 }
-enum class CheckResult {
-    CorrectOrder,
-    WrongOrder,
-    ContinueChecking
+enum class CheckResult(val comparatorResult: Int) {
+    CorrectOrder(-1),
+    WrongOrder(1),
+    ContinueChecking(0)
 }
 
 fun sortPackets(input: List<List<Any>>): List<List<Any>> {
-    return input.sortedWith { left:List<Any>, right:List<Any> ->
-        when(checkOrder(left, right)) {
-            CheckResult.CorrectOrder -> -1
-            CheckResult.WrongOrder -> 1
-            CheckResult.ContinueChecking -> 0
-        }
-    }
+    return input.sortedWith { left, right -> checkOrder(left, right).comparatorResult }
 }
