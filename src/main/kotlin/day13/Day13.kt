@@ -10,7 +10,14 @@ fun main() {
 }
 
 fun part1(input: List<String>): Long {
-    return 0
+    return input.windowed(3, 3, true) //skip the blank lines
+        .map { lines ->
+            val (left, right) = lines
+            checkOrder(parse(left), parse(right))
+        }
+        .mapIndexed(::Pair)
+        .filter { it.second == CheckResult.CorrectOrder }
+        .sumOf { it.first.toLong() + 1 } //the problem considers the indices to be 1-based
 }
 
 fun part2(input: List<String>): Long {
@@ -58,24 +65,55 @@ private fun parseListContents(input:String) : List<Any> {
     return result
 }
 
-/*
-fun checkOrder(left: List<Any>, right:Int) {
-    println("comparing a List and an Int")
+fun checkOrder(left: List<Any>, right:Int) : CheckResult {
+    return checkOrder(left, listOf(right))
 }
 
-fun checkOrder(left: Int, right: List<Any>) {
-    println("comparing an Int and a List")
+
+fun checkOrder(left: Int, right: List<Any>) : CheckResult {
+    return checkOrder(listOf(left), right)
 }
 
-fun checkOrder(left:List<Any>, right:List<Any>) {
-    println("comparing a List and a List")
+@Suppress("UNCHECKED_CAST")
+fun checkOrder(left:List<Any>, right:List<Any>): CheckResult {
+    if (left.isEmpty()) {
+        return if (right.isNotEmpty()) { CheckResult.CorrectOrder } else { CheckResult.ContinueChecking }
+    }
+    if (right.isEmpty()) {
+        return CheckResult.WrongOrder
+    }
+    val result: CheckResult
+    val leftItem = left.first()
+    val rightItem = right.first()
+    if (leftItem is Int) {
+        if (rightItem is Int) {
+            result = checkOrder(leftItem, rightItem)
+        } else {
+            result = checkOrder(leftItem, rightItem as List<Any>)
+        }
+    } else {
+         if (rightItem is Int) {
+             result = checkOrder(leftItem as List<Any>, rightItem)
+         } else {
+             result = checkOrder(leftItem as List<Any>, rightItem as List<Any>)
+         }
+    }
+    if (result != CheckResult.ContinueChecking) {
+        return result
+    }
+    return checkOrder(left.drop(1), right.drop(1))
 }
 
-fun checkOrder(left: Int, right: Int) {
-    println("comparing an Int and an Int")
+
+fun checkOrder(left: Int, right: Int) : CheckResult {
+    return when {
+        left < right -> CheckResult.CorrectOrder
+        right < left -> CheckResult.WrongOrder
+        else -> CheckResult.ContinueChecking
+    }
 }
 enum class CheckResult {
-    RightOrder,
+    CorrectOrder,
     WrongOrder,
     ContinueChecking
-}*/
+}
