@@ -106,7 +106,7 @@ class Day14Test {
 
         @Test
         fun `simulateSandWithFloor should include grains of sand that have come to rest in blockedSquares`() {
-            """
+            val answerFromGuide = """
                 ............o............
                 ...........ooo...........
                 ..........ooooo..........
@@ -119,7 +119,7 @@ class Day14Test {
                 ...ooo#########ooooooo...
                 ..ooooo.......ooooooooo..
                 #########################
-            """.trimIndent()
+            """.trimIndent().lines()
 
             val cave = Cave(sampleInput)
             val initialBlockedSquares = cave.blockedSquares.size
@@ -127,105 +127,14 @@ class Day14Test {
             val result = cave.simulateSandWithFloor()
             assert(cave.blockedSquares.size == initialBlockedSquares + result)
 
-            assert(Point(490,10) in cave.blockedSquares)
-            assert(Point(491,10) in cave.blockedSquares)
-            assert(Point(492,10) in cave.blockedSquares)
-            assert(Point(493,10) in cave.blockedSquares)
-            assert(Point(494,10) in cave.blockedSquares)
-            assert(Point(502,10) in cave.blockedSquares)
-            assert(Point(503,10) in cave.blockedSquares)
-            assert(Point(503,10) in cave.blockedSquares)
-            assert(Point(504,10) in cave.blockedSquares)
-            assert(Point(505,10) in cave.blockedSquares)
-            assert(Point(506,10) in cave.blockedSquares)
-            assert(Point(507,10) in cave.blockedSquares)
-            assert(Point(508,10) in cave.blockedSquares)
-            assert(Point(509,10) in cave.blockedSquares)
-            assert(Point(510,10) in cave.blockedSquares)
-
-            assert(Point(491,9) in cave.blockedSquares)
-            assert(Point(492,9) in cave.blockedSquares)
-            assert(Point(493,9) in cave.blockedSquares)
-            assert(Point(503,9) in cave.blockedSquares)
-            assert(Point(504,9) in cave.blockedSquares)
-            assert(Point(505,9) in cave.blockedSquares)
-            assert(Point(506,9) in cave.blockedSquares)
-            assert(Point(507,9) in cave.blockedSquares)
-            assert(Point(508,9) in cave.blockedSquares)
-            assert(Point(509,9) in cave.blockedSquares)
-
-            assert(Point(492,8) in cave.blockedSquares)
-            assert(Point(493,8) in cave.blockedSquares)
-            assert(Point(494,8) in cave.blockedSquares)
-            assert(Point(495,8) in cave.blockedSquares)
-            assert(Point(496,8) in cave.blockedSquares)
-            assert(Point(497,8) in cave.blockedSquares)
-            assert(Point(498,8) in cave.blockedSquares)
-            assert(Point(499,8) in cave.blockedSquares)
-            assert(Point(500,8) in cave.blockedSquares)
-            assert(Point(501,8) in cave.blockedSquares)
-
-            assert(Point(493,7) in cave.blockedSquares)
-            assert(Point(494,7) in cave.blockedSquares)
-            assert(Point(495,7) in cave.blockedSquares)
-            assert(Point(496,7) in cave.blockedSquares)
-            assert(Point(498,7) in cave.blockedSquares)
-            assert(Point(499,7) in cave.blockedSquares)
-            assert(Point(500,7) in cave.blockedSquares)
-            assert(Point(501,7) in cave.blockedSquares)
-            assert(Point(503,7) in cave.blockedSquares)
-            assert(Point(504,7) in cave.blockedSquares)
-            assert(Point(505,7) in cave.blockedSquares)
-            assert(Point(506,7) in cave.blockedSquares)
-            assert(Point(507,7) in cave.blockedSquares)
-
-            assert(Point(494,6) in cave.blockedSquares)
-            assert(Point(495,6) in cave.blockedSquares)
-            assert(Point(499,6) in cave.blockedSquares)
-            assert(Point(500,6) in cave.blockedSquares)
-            assert(Point(501,6) in cave.blockedSquares)
-            assert(Point(503,6) in cave.blockedSquares)
-            assert(Point(504,6) in cave.blockedSquares)
-            assert(Point(505,6) in cave.blockedSquares)
-            assert(Point(506,6) in cave.blockedSquares)
-
-            assert(Point(495,5) in cave.blockedSquares)
-            assert(Point(496,5) in cave.blockedSquares)
-            assert(Point(497,5) in cave.blockedSquares)
-            assert(Point(499,5) in cave.blockedSquares)
-            assert(Point(500,5) in cave.blockedSquares)
-            assert(Point(501,5) in cave.blockedSquares)
-            assert(Point(503,5) in cave.blockedSquares)
-            assert(Point(504,5) in cave.blockedSquares)
-            assert(Point(505,5) in cave.blockedSquares)
-
-            assert(Point(496,4) in cave.blockedSquares)
-            assert(Point(497,4) in cave.blockedSquares)
-            assert(Point(499,4) in cave.blockedSquares)
-            assert(Point(500,4) in cave.blockedSquares)
-            assert(Point(501,4) in cave.blockedSquares)
-            assert(Point(503,4) in cave.blockedSquares)
-            assert(Point(504,4) in cave.blockedSquares)
-
-            assert(Point(497,3) in cave.blockedSquares)
-            assert(Point(498,3) in cave.blockedSquares)
-            assert(Point(499,3) in cave.blockedSquares)
-            assert(Point(500,3) in cave.blockedSquares)
-            assert(Point(501,3) in cave.blockedSquares)
-            assert(Point(502,3) in cave.blockedSquares)
-            assert(Point(503,3) in cave.blockedSquares)
-
-            assert(Point(498,2) in cave.blockedSquares)
-            assert(Point(499,2) in cave.blockedSquares)
-            assert(Point(500,2) in cave.blockedSquares)
-            assert(Point(501,2) in cave.blockedSquares)
-            assert(Point(502,2) in cave.blockedSquares)
-
-            assert(Point(499,1) in cave.blockedSquares)
-            assert(Point(500,1) in cave.blockedSquares)
-            assert(Point(501,1) in cave.blockedSquares)
-
-            assert(Point(500,0) in cave.blockedSquares)
+            val xOffset = 500 - answerFromGuide.first().indexOf('o') //the o in the first line is x= 500
+            val locationsFromGuide = answerFromGuide
+                .flatMapIndexed { y: Int, line: String ->
+                    line.mapIndexed { x, char -> Pair(Point(xOffset + x, y), char) }
+                }
+                .filter { (_, second) ->  second == 'o'}
+                .map { it.first }
+            assert(cave.blockedSquares.containsAll(locationsFromGuide))
         }
     }
 }
