@@ -16,6 +16,11 @@ class Day14Test {
         assert(part1(sampleInput) == 24)
     }
 
+    @Test
+    fun `part2 should construct a cave, simulate sand with a floor and return the number of grains that fell`() {
+        assert(part2(sampleInput) == 93)
+    }
+
     @Nested
     inner class CaveTest {
         @Test
@@ -89,6 +94,14 @@ class Day14Test {
             assert(Point(497,8) in cave.blockedSquares)
             assert(Point(495,8) in cave.blockedSquares)
             assert(Point(497,5) in cave.blockedSquares)
+        }
+
+        @Test
+        fun `simulateSandWithFloor should return the number of grains of sand that fall until (500,0) is blocked`() {
+            val cave = Cave(sampleInput)
+
+            val result = cave.simulateSandWithFloor()
+            assert(result == 93)
         }
     }
 }

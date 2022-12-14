@@ -15,8 +15,8 @@ fun part1(input: List<String>): Int {
     return Cave(input).simulateSand()
 }
 
-fun part2(input: List<String>): Long {
-    return 0
+fun part2(input: List<String>): Int {
+    return Cave(input).simulateSandWithFloor()
 }
 
 class Cave private constructor(val blockedSquares: MutableSet<Point>) {
@@ -40,6 +40,28 @@ class Cave private constructor(val blockedSquares: MutableSet<Point>) {
             //the grain of sand has fallen to the abyss!
             return grainsOfSandThatHaveComeToRest
         }
+    }
+
+    fun simulateSandWithFloor(): Int {
+        var grainsOfSand = 0
+        while(START_POINT !in blockedSquares) {
+            grainsOfSand++
+            var sandPosition = START_POINT
+            sandMove@while(true) {
+                val newPoint = listOf(sandPosition.south(), sandPosition.southWest(), sandPosition.southEast())
+                    .filter { it !in blockedSquares }
+                    .firstOrNull { it.y <= maxY + 1 }
+
+                if (newPoint != null ) {
+                    sandPosition = newPoint
+                    continue@sandMove
+                }
+                break@sandMove
+            }
+            //the grain of sand has come to rest, either from being blocked or hitting the floor
+            blockedSquares += sandPosition
+        }
+        return grainsOfSand
     }
 
     val validX: IntRange = blockedSquares.minOf { it.x } .. blockedSquares.maxOf { it.x}
