@@ -23,7 +23,7 @@ class Cave private constructor(val blockedSquares: MutableSet<Point>) {
     fun simulateSand(): Int {
         var grainsOfSandThatHaveComeToRest = 0
         nextGrain@while(true) {
-            var sandPosition = Point(500,0)
+            var sandPosition = START_POINT
             sandMove@while (sandPosition.x in validX && sandPosition.y <= maxY) {
                 val potentialPoints = listOf(sandPosition.south(), sandPosition.southWest(), sandPosition.southEast())
                 for (potentialPoint in potentialPoints) {
@@ -68,6 +68,8 @@ class Cave private constructor(val blockedSquares: MutableSet<Point>) {
             }
             return Cave(blockedSquares)
         }
+
+        private val START_POINT = Point(500, 0)
     }
 }
 
