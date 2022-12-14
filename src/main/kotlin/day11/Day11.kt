@@ -158,7 +158,7 @@ fun processRounds(monkeys: List<Monkey>, numberOfRounds: Int, problemMode:Proble
             { worryLevel -> worryLevel % commonMultiple } //mod the value by the common multiple of all divisors to prevent Long overflows
         }
     }
-    repeat(numberOfRounds) { round ->
+    repeat(numberOfRounds) { _ ->
         monkeys.forEach { monkey ->
             monkey.considerItems(worryAdjuster).forEach { (item, destinationMonkey) ->
                 monkeys[destinationMonkey].items.add(item)
