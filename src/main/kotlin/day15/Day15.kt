@@ -15,10 +15,14 @@ fun part1(input: List<String>): Int {
 }
 
 fun part2(input: List<String>): Long {
-    return 0
+    val coordinateLimit = 4000000
+    val location = findBeacon(parse(input), coordinateLimit)
+    return location.x.toLong() * coordinateLimit.toLong() + location.y.toLong()
 }
 
-data class Sensor(val location: Point, val closestBeacon: Point)
+data class Sensor(val location: Point, val closestBeacon: Point) {
+    val manhattanDistance = location.manhattanDistance(closestBeacon)
+}
 
 fun countPositionsWithNoBeaconsInRow(sensors: List<Sensor>, y: Int): Int {
     val result = sensors.asSequence()
@@ -36,6 +40,33 @@ fun countPositionsWithNoBeaconsInRow(sensors: List<Sensor>, y: Int): Int {
     return (result - beaconsOnY).size
 }
 
+fun findBeacon(sensors: List<Sensor>, maxCoordinateValue: Int): Point {
+    /*
+    the signal is in only 1 square, so it has to be 1 square beyond the "bounding diamond" for
+    a sensor — otherwise there could be more than 1 square the signal could be in.
+
+    This is a manhattan distance of n+1 (where n is the manhattan distance of the closest beacon).
+
+    So:
+        - start with the sensor that is furthest to its closest beacon (this eliminates the most points)
+        - consider the points at manhattan distance 1 further than the beacon in the bounding box
+        - find a point outside the bounding diamond for every other sensor
+        - if nothing, try again with the sensor next closest to its beacon, and so on
+     */
+    val boundingBox = 0..maxCoordinateValue
+
+    sensors.sortedBy { it.manhattanDistance }.toMutableList().forEach { sensor ->
+        val otherSensors = sensors.filter { it != sensor }
+        sensor.location.pointsWithManhattanDistance(sensor.manhattanDistance + 1)
+            .filter { it.x in boundingBox && it.y in boundingBox }
+            .forEach { candidate ->
+                otherSensors.firstOrNull { it.location.manhattanDistance(candidate) <= it.manhattanDistance }
+                    ?: return candidate
+            }
+    }
+
+    throw IllegalStateException("No point found that isn't within a sensor's distance")
+}
 
 fun Point.findPointsOnRowWithManhattanDistance(y: Int, manhattanDistance: Int): Sequence<Point> {
     val yOffset = abs(y - this.y)

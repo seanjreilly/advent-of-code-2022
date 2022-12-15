@@ -2,6 +2,7 @@ package day15
 
 import org.junit.jupiter.api.Test
 import utils.Point
+import utils.readInput
 
 class Day15Test {
     private val sampleInput = """
@@ -33,6 +34,14 @@ class Day15Test {
     fun `part1 should call countPositionsWithNoBeaconsInRow with y = 2000000`() {
         assert(part1(bigSampleInput) == 2351599)
     }
+
+    @Test
+    fun `part2 should return the tuning frequency for the big result`() {
+        val hugeInput = readInput("Day15")
+        val expectedPoint = Point(3103499, 3391794)
+        val expectedResult = (expectedPoint.x.toLong() * 4000000L) + expectedPoint.y.toLong()
+        assert(part2(hugeInput) == expectedResult)
+    }
     
     @Test
     fun `countPositionsWithNoBeaconsInRow should return the number of positions with a given y coordinate that cannot contain a beacon`() {
@@ -44,6 +53,18 @@ class Day15Test {
     fun `countPositionsWithNoBeaconsInRow should work with a sensor that is _really_ far from the closest beacon`() {
         val sensors = parse(bigSampleInput)
         assert(countPositionsWithNoBeaconsInRow(sensors, 2000000) == 2351599)
+    }
+
+    @Test
+    fun `findBeacon should return the only point in the bounding box that isn't covered by any sensor`() {
+        val sensors = parse(sampleInput)
+        assert(findBeacon(sensors, 20) == Point(14,11))
+    }
+
+    @Test
+    fun `findBeacon should return with really big input`() {
+        val sensors = parse(readInput("Day15"))
+        assert(findBeacon(sensors, 4000000) == Point(3103499, 3391794))
     }
 
     @Test
@@ -89,5 +110,5 @@ class Day15Test {
         //after this it should return no points
         assert(point.findPointsOnRowWithManhattanDistance(17, manhattanDistance = manhattanDistance).toSet() == emptySet<Point>())
     }
-
 }
+
