@@ -1,5 +1,7 @@
 package utils
 
+import kotlin.math.abs
+
 data class Point(val x: Int, val y: Int) {
     fun north() = Point(x, y - 1)
     fun northEast() = Point(x + 1, y - 1)
@@ -26,5 +28,23 @@ data class Point(val x: Int, val y: Int) {
             southEast(),
             southWest()
         )
+    }
+
+    fun manhattanDistance(other: Point): Int {
+        return abs(other.x - x) + abs(other.y - y)
+    }
+
+    fun pointsWithManhattanDistance(manhattanDistance: Int): Set<Point> {
+        return (0..manhattanDistance)
+            .flatMap { xAdjustment ->
+                val yAdjustment = manhattanDistance - xAdjustment
+                listOf(
+                    Point(this.x + xAdjustment, this.y + yAdjustment),
+                    Point(this.x + xAdjustment, this.y - yAdjustment),
+                    Point(this.x - xAdjustment, this.y + yAdjustment),
+                    Point(this.x - xAdjustment, this.y - yAdjustment),
+                )
+            }
+            .toSet()
     }
 }
