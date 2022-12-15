@@ -34,17 +34,17 @@ data class Point(val x: Int, val y: Int) {
         return abs(other.x - x) + abs(other.y - y)
     }
 
-    fun pointsWithManhattanDistance(manhattanDistance: Int): Set<Point> {
+    fun pointsWithManhattanDistance(manhattanDistance: Int): Sequence<Point> {
         return (0..manhattanDistance)
+            .asSequence()
             .flatMap { xAdjustment ->
                 val yAdjustment = manhattanDistance - xAdjustment
-                listOf(
+                sequenceOf(
                     Point(this.x + xAdjustment, this.y + yAdjustment),
                     Point(this.x + xAdjustment, this.y - yAdjustment),
                     Point(this.x - xAdjustment, this.y + yAdjustment),
                     Point(this.x - xAdjustment, this.y - yAdjustment),
                 )
             }
-            .toSet()
     }
 }

@@ -46,7 +46,7 @@ class PointTest {
             Point(-3, -0),
         )
 
-        val result: Set<Point> = point.pointsWithManhattanDistance(manhattanDistance)
+        val result = point.pointsWithManhattanDistance(manhattanDistance).toSet()
         expectedResult.forEach {
             assert(it in result)
         }
