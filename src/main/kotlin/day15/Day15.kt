@@ -18,15 +18,7 @@ fun part2(input: List<String>): Long {
     return 0
 }
 
-data class Sensor(val location: Point, val closestBeacon: Point) {
-    fun findPointsWithNoUnknownBeacons() = sequence<Point> {
-        yield(location)
-        val manhattanDistance = location.manhattanDistance(closestBeacon)
-        (1..manhattanDistance).forEach { distance ->
-            yieldAll(location.pointsWithManhattanDistance(distance))
-        }
-    }
-}
+data class Sensor(val location: Point, val closestBeacon: Point)
 
 fun countPositionsWithNoBeaconsInRow(sensors: List<Sensor>, y: Int): Int {
     val result = sensors.asSequence()
