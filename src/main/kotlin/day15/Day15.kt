@@ -26,7 +26,7 @@ data class Sensor(val location: Point, val closestBeacon: Point) {
 
 fun countPositionsWithNoBeaconsInRow(sensors: List<Sensor>, y: Int): Int {
     val result = sensors.asSequence()
-    .flatMap {sensor ->
+    .flatMap { sensor ->
         val yOffset = abs(y - sensor.location.y)
         val manhattanDistanceBetweenSensorAndBeacon = sensor.location.manhattanDistance(sensor.closestBeacon)
         val manhattanDistancesToConsider = yOffset..manhattanDistanceBetweenSensorAndBeacon
