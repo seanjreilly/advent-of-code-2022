@@ -48,14 +48,14 @@ fun findBeacon(sensors: List<Sensor>, maxCoordinateValue: Int): Point {
     This is a manhattan distance of n+1 (where n is the manhattan distance of the closest beacon).
 
     So:
-        - start with the sensor that is furthest to its closest beacon (this eliminates the most points)
-        - consider the points at manhattan distance 1 further than the beacon in the bounding box
-        - find a point outside the bounding diamond for every other sensor
-        - if nothing, try again with the sensor next closest to its beacon, and so on
+        - For each sensor:
+            - consider the points at manhattan distance 1 further than the beacon in the bounding box
+            - find a point outside the bounding diamond for every other sensor
+        - if nothing, there's no answer — throw an exception
      */
     val boundingBox = 0..maxCoordinateValue
 
-    sensors.sortedBy { it.manhattanDistance }.toMutableList().forEach { sensor ->
+    sensors.forEach { sensor ->
         val otherSensors = sensors.filter { it != sensor }
         sensor.location.pointsWithManhattanDistance(sensor.manhattanDistance + 1)
             .filter { it.x in boundingBox && it.y in boundingBox }
