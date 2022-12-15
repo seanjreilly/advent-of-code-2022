@@ -2,7 +2,7 @@ package day08
 
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import utils.gridmap.Point
+import utils.Point
 
 class Day08Test {
     private val sampleInput = """

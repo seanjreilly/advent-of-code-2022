@@ -1,6 +1,6 @@
 package day14
 
-import utils.gridmap.Point
+import utils.Point
 import utils.readInput
 import kotlin.math.max
 import kotlin.math.min

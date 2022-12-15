@@ -3,7 +3,7 @@ package day09
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import utils.gridmap.Point
+import utils.Point
 
 class Day09Test {
     private val sampleInput = """

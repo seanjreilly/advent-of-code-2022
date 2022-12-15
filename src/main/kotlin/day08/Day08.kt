@@ -1,7 +1,7 @@
 package day08
 
-import utils.gridmap.GridMap
-import utils.gridmap.Point
+import utils.GridMap
+import utils.Point
 import utils.readInput
 
 fun main() {

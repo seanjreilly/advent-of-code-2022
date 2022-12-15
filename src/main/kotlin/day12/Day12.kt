@@ -1,7 +1,7 @@
 package day12
 
-import utils.gridmap.GridMap
-import utils.gridmap.Point
+import utils.GridMap
+import utils.Point
 import utils.readInput
 import java.util.*
 

@@ -1,6 +1,6 @@
 package day09
 
-import utils.gridmap.Point
+import utils.Point
 import utils.readInput
 import kotlin.math.abs
 
