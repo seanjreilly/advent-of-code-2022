@@ -38,6 +38,74 @@ class Day16Test {
                 Valve(Location("JJ"), 21),
             )
 
+            expectedValves.forEach {
+                assert(valveLayout.valves[it.location] == it)
+            }
+            assert(expectedValves.size == valveLayout.valves.size)
+
+//
+//            val expectedJourneys = mapOf(
+//                Pair(Location("AA"), Location("BB")) to 1,
+//                Pair(Location("AA"), Location("CC")) to 2,
+//                Pair(Location("AA"), Location("DD")) to 1,
+//                Pair(Location("AA"), Location("EE")) to 2,
+//                Pair(Location("AA"), Location("HH")) to 5,
+//                Pair(Location("AA"), Location("JJ")) to 2,
+//
+//                Pair(Location("BB"), Location("CC")) to 1,
+//                Pair(Location("BB"), Location("DD")) to 2,
+//                Pair(Location("BB"), Location("EE")) to 3,
+//                Pair(Location("BB"), Location("HH")) to 6,
+//                Pair(Location("BB"), Location("JJ")) to 3,
+//
+//                Pair(Location("CC"), Location("BB")) to 1,
+//                Pair(Location("CC"), Location("DD")) to 1,
+//                Pair(Location("CC"), Location("EE")) to 2,
+//                Pair(Location("CC"), Location("HH")) to 5,
+//                Pair(Location("CC"), Location("JJ")) to 4,
+//
+//                Pair(Location("DD"), Location("BB")) to 2,
+//                Pair(Location("DD"), Location("CC")) to 1,
+//                Pair(Location("DD"), Location("EE")) to 1,
+//                Pair(Location("DD"), Location("HH")) to 4,
+//                Pair(Location("DD"), Location("JJ")) to 3,
+//
+//                Pair(Location("EE"), Location("BB")) to 3,
+//                Pair(Location("EE"), Location("CC")) to 2,
+//                Pair(Location("EE"), Location("DD")) to 1,
+//                Pair(Location("EE"), Location("HH")) to 3,
+//                Pair(Location("EE"), Location("JJ")) to 4,
+//
+//                Pair(Location("HH"), Location("BB")) to 6,
+//                Pair(Location("HH"), Location("CC")) to 5,
+//                Pair(Location("HH"), Location("DD")) to 4,
+//                Pair(Location("HH"), Location("EE")) to 3,
+//                Pair(Location("HH"), Location("JJ")) to 7,
+//
+//                Pair(Location("JJ"), Location("BB")) to 3,
+//                Pair(Location("JJ"), Location("CC")) to 5,
+//                Pair(Location("JJ"), Location("DD")) to 3,
+//                Pair(Location("JJ"), Location("EE")) to 4,
+//                Pair(Location("JJ"), Location("HH")) to 7,
+//            )
+//
+//            expectedJourneys.forEach { (locations, distance) ->
+//                assert(valveLayout.journeys[locations] == distance)
+//            }
+//            assert(valveLayout.journeys.size == expectedJourneys.size)
+//
+//            //there should be a journey from AA to every valve
+//            expectedValves.forEach { valve ->
+//                assert(Pair(Location("AA"), valve.location) in valveLayout.journeys.keys) { "There should be a journey from the start to every active valve" }
+//            }
+//
+//            //there should be a journey from every valve to every other valve
+//            expectedValves.forEach { firstValve ->
+//                expectedValves.forEach { secondValve ->
+//                    assert(Pair(firstValve.location, secondValve.location) in valveLayout.journeys.keys) { "There should be a journey from every valve to every other valve" }
+//                }
+//            }
+
             val expectedTunnels = mapOf(
                 Location("AA") to setOf(Location("DD"), Location("II"), Location("BB")),
                 Location("BB") to setOf(Location("CC"), Location("AA")),
@@ -50,11 +118,6 @@ class Day16Test {
                 Location("II") to setOf(Location("AA"), Location("JJ")),
                 Location("JJ") to setOf(Location("II")),
             )
-
-            expectedValves.forEach {
-                assert(valveLayout.valves[it.location] == it)
-            }
-            assert(expectedValves.size == valveLayout.valves.size)
 
             expectedTunnels.forEach { (location, reachableLocations) ->
                 assert(valveLayout.tunnels[location] == reachableLocations)
