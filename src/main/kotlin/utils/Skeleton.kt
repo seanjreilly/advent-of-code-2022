@@ -2,14 +2,20 @@
 
 package utils
 
+import kotlin.system.measureTimeMillis
+
 /*
  * The skeleton code to run each day
  */
 
 fun main() {
-    val input = readInput("DayXX")
-    println(part1(input))
-    println(part2(input))
+    val elapsed = measureTimeMillis {
+        val input = readInput("DayXX")
+        println(day16.part1(input))
+        println(day16.part2(input))
+    }
+    println()
+    println("Elapsed time: $elapsed ms.")
 }
 
 fun part1(input: List<String>): Long {
