@@ -81,8 +81,8 @@ class ValveLayout private constructor(val valves: Map<Location,Valve>, val tunne
             }
         }
 
-        //nodes - 1 times is enough to reach every destination
-        repeat(tunnels.size - 1) {
+        //continue until the cost from every location to every other location is known
+        while (shortestDistances.size < (tunnels.size * tunnels.size)) {
             //do this in 2 phases to avoid ConcurrentModificationException
             val mappingsToAdd = mutableListOf<Pair<Pair<Location, Location>, Int>>()
             shortestDistances.forEach { (journey, distance) ->
