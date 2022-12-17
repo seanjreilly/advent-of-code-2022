@@ -3,11 +3,16 @@ package day09
 import utils.Point
 import utils.readInput
 import kotlin.math.abs
+import kotlin.system.measureTimeMillis
 
 fun main() {
-    val input = readInput("Day09")
-    println(part1(input))
-    println(part2(input))
+    val elapsed = measureTimeMillis {
+        val input = readInput("Day09")
+        println(part1(input))
+        println(part2(input))
+    }
+    println()
+    println("Elapsed time: $elapsed ms.")
 }
 
 fun part1(input: List<String>): Int {

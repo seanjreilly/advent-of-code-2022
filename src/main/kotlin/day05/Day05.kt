@@ -2,11 +2,16 @@ package day05
 
 import utils.readInput
 import utils.stack.*
+import kotlin.system.measureTimeMillis
 
 fun main() {
-    val input = readInput("Day05")
-    println(part1(input))
-    println(part2(input))
+    val elapsed = measureTimeMillis {
+        val input = readInput("Day05")
+        println(part1(input))
+        println(part2(input))
+    }
+    println()
+    println("Elapsed time: $elapsed ms.")
 }
 
 fun part1(input: List<String>): String {
