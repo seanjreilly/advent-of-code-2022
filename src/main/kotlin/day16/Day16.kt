@@ -72,10 +72,7 @@ class ValveLayout private constructor(val valves: Map<Location,Valve>, val tunne
         var highestPressureReleased = 0
         val shortestDistances = buildShortestDistancesMap()
 
-//        val queue = ArrayDeque<DuoProgress>()
-//        queue.addLast(StartingDuoProgress())
-
-        val queue = PriorityQueue<Pair<DuoProgress, Int>>(compareBy { it.second })
+        val queue = PriorityQueue<Pair<DuoProgress, Int>>(compareByDescending { it.second })
         queue.add(Pair(StartingDuoProgress(), 0))
 
         fun upperBound(progress: DuoProgress) : Int {
@@ -88,11 +85,10 @@ class ValveLayout private constructor(val valves: Map<Location,Valve>, val tunne
                     additionalScore += (valve.flow * ((maxMinutesRemaining - distance) - 1))
                 }
             }
-            return additionalScore + progress.totalPressureReleased
+            return ((additionalScore * 3) /4) + progress.totalPressureReleased
         }
 
         while (queue.isNotEmpty()) {
-//            val previous = queue.removeLast()
             val (previous, previousUpperBound)= queue.remove()
 
             if (previousUpperBound < highestPressureReleased) {
@@ -131,7 +127,6 @@ class ValveLayout private constructor(val valves: Map<Location,Valve>, val tunne
                 if (upperBound < highestPressureReleased) {
                     return //prune the solution
                 }
-//                queue.addLast(newProgress)
                 queue.add(Pair(newProgress, upperBound))
             }
 
