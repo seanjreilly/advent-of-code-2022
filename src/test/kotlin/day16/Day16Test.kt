@@ -18,8 +18,13 @@ class Day16Test {
     """.trimIndent().lines()
 
     @Test
-    fun `part1 should construct a valve layout and return the maximum pressure that can be relieved in 30 minutes`() {
+    fun `part1 should construct a valve layout and return the maximum pressure that can be relieved in 30 minutes by 1 person`() {
         assert(part1(sampleInput) == 1651)
+    }
+
+    @Test
+    fun `part2 should construct a valve layout and return the maximum pressure that can be relieved in 26 minutes by 2 people`() {
+        assert(part2(sampleInput) == 1707)
     }
 
     @Nested
@@ -69,6 +74,15 @@ class Day16Test {
             val result = valveLayout.findMaximumSoloRelievablePressure()
 
             assert(result == 1651)
+        }
+
+        @Test
+        fun `findMaximumDuoRelievablePressure should use BFS to find the most pressure that can be relieved using the rules`() {
+            val valveLayout = ValveLayout(sampleInput)
+
+            val result = valveLayout.findMaximumDuoRelievablePressure()
+
+            assert(result == 1707)
         }
     }
 }

@@ -18,8 +18,8 @@ fun part1(input: List<String>): Int {
     return ValveLayout(input).findMaximumSoloRelievablePressure()
 }
 
-fun part2(input: List<String>): Long {
-    return 0
+fun part2(input: List<String>): Int {
+    return ValveLayout(input).findMaximumDuoRelievablePressure()
 }
 
 data class Location(val code:String)
@@ -61,6 +61,56 @@ class ValveLayout private constructor(val valves: Map<Location,Valve>, val tunne
                     }
                     queue.addLast(newProgress)
                 }
+        }
+        return highestPressureReleased
+    }
+
+    fun findMaximumDuoRelievablePressure(): Int {
+        var highestPressureReleased = 0
+        val shortestDistances = buildShortestDistancesMap()
+
+        val queue = ArrayDeque<DuoProgress>()
+        queue.addLast(StartingDuoProgress())
+
+        while (queue.isNotEmpty()) {
+            val previous = queue.removeFirst()
+
+            if (previous.totalPressureReleased > highestPressureReleased) {
+                highestPressureReleased = previous.totalPressureReleased
+            }
+
+            if (previous.openedValves.size == valves.size) {
+                // once all the valves are opened it doesn't matter where we move
+                continue
+            }
+
+            if (previous.minutesRemainingA == 0 && previous.minutesRemainingB == 0) {
+                //the person and the elephant are both out of time
+                continue
+            }
+
+            // somebody travels to a valve and turn it on
+            (valves.values - previous.openedValves)
+                .forEach { valve ->
+                    // A does it
+                    val costOfMoveA = shortestDistances[Pair(previous.locationA, valve.location)]!!
+                    val newProgressA = DuoProgressUpdateA(valve, costOfMoveA, previous)
+
+                    if (newProgressA.minutesRemainingA <= 0) {
+                        return@forEach //can't make it in time!
+                    }
+                    queue.addLast(newProgressA)
+
+                    // B does it
+                    val costOfMoveB = shortestDistances[Pair(previous.locationB, valve.location)]!!
+                    val newProgressB = DuoProgressUpdateB(valve, costOfMoveB, previous)
+
+                    if (newProgressB.minutesRemainingB <= 0) {
+                        return@forEach //can't make it in time!
+                    }
+                    queue.addLast(newProgressB)
+                }
+
         }
         return highestPressureReleased
     }
@@ -134,8 +184,10 @@ sealed interface SoloProgress {
     val minutesRemaining: Int
 }
 
+val STARTING_LOCATION = Location("AA")
+
 class StartingSoloProgress : SoloProgress {
-    override val location = Location("AA")
+    override val location = STARTING_LOCATION
     override val totalPressureReleased = 0
     override val openedValves = emptySet<Valve>()
     override val minutesRemaining = 30
@@ -146,4 +198,36 @@ class SoloProgressUpdate(openedValve: Valve, costOfMove: Int, previous: SoloProg
     override val minutesRemaining = (previous.minutesRemaining - costOfMove) - 1
     override val totalPressureReleased = (openedValve.flow * minutesRemaining) + previous.totalPressureReleased //pressure only drops on the following turn
     override val openedValves = previous.openedValves + openedValve
+}
+
+sealed interface DuoProgress {
+    val openedValves: Set<Valve>
+    val locationA: Location
+    val minutesRemainingA: Int
+    val locationB: Location
+    val minutesRemainingB: Int
+    val totalPressureReleased: Int
+}
+
+class StartingDuoProgress: DuoProgress {
+    override val totalPressureReleased = 0
+    override val openedValves = emptySet<Valve>()
+    override val locationA = Location("AA")
+    override val minutesRemainingA = 26
+    override val locationB = Location("AA")
+    override val minutesRemainingB = 26
+}
+
+class DuoProgressUpdateA(valveOpenedByA: Valve, costOfMoveA: Int, previous: DuoProgress) : DuoProgress by previous {
+    override val openedValves = previous.openedValves + valveOpenedByA
+    override val locationA = valveOpenedByA.location
+    override val minutesRemainingA = (previous.minutesRemainingA - costOfMoveA) - 1
+    override val totalPressureReleased = (valveOpenedByA.flow * minutesRemainingA) + previous.totalPressureReleased
+}
+
+class DuoProgressUpdateB(valveOpenedByB: Valve, costOfMoveB: Int, previous: DuoProgress) : DuoProgress by previous {
+    override val openedValves = previous.openedValves + valveOpenedByB
+    override val locationB = valveOpenedByB.location
+    override val minutesRemainingB = (previous.minutesRemainingB - costOfMoveB) - 1
+    override val totalPressureReleased = (valveOpenedByB.flow * minutesRemainingB) + previous.totalPressureReleased
 }
