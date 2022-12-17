@@ -85,7 +85,7 @@ class ValveLayout private constructor(val valves: Map<Location,Valve>, val tunne
             remainingValves.forEach { valve ->
                 val distance = min(shortestDistances[Pair(progress.locationA, valve.location)]!!, shortestDistances[Pair(progress.locationB, valve.location)]!!)
                 if (maxMinutesRemaining > distance) {
-                    additionalScore += valve.flow * (maxMinutesRemaining - distance) - 1
+                    additionalScore += (valve.flow * ((maxMinutesRemaining - distance) - 1))
                 }
             }
             return additionalScore + progress.totalPressureReleased
