@@ -11,8 +11,8 @@ import kotlin.system.measureTimeMillis
 fun main() {
     val elapsed = measureTimeMillis {
         val input = readInput("DayXX")
-        println(day16.part1(input))
-        println(day16.part2(input))
+        println(part1(input))
+        println(part2(input))
     }
     println()
     println("Elapsed time: $elapsed ms.")
