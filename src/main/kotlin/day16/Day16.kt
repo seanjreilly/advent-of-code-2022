@@ -50,28 +50,15 @@ class ValveLayout private constructor(val valves: Map<Location,Valve>, val tunne
                 continue
             }
 
-            if (previousMove.location != STARTING_LOCATION) {
-                //we're at a valve... is it open?
-                val valve = valves[previousMove.location]!!
-                if (valve !in previousMove.openedValves) {
-                    //it's not open, so open it
-                    val newProgress = OpenValveProgress(valve, previousMove)
-                    queue.addLast(newProgress)
-                    continue
-                }
+            //travel to a valve and turn it on
+            (valves.values - previousMove.openedValves)
+                .forEach { valve ->
+                    val costOfMove = shortestDistances[Pair(previousMove.location, valve.location)]!!
+                    val newProgress = ProgressUpdate(valve, costOfMove, previousMove)
 
-            }
-
-            //This valve is open (or we're not at a valve yet), so move to a valve
-            valves.keys
-                .filter { it != previousMove.location } //don't move to the valve we are already at
-                .filter { it !in previousMove.openedValves.map { it.location } } //or a valve we've already opened
-                .forEach { destination ->
-                    val costOfMove = shortestDistances[Pair(previousMove.location, destination)]!!
-                    if (costOfMove > previousMove.minutesRemaining) {
+                    if (newProgress.minutesRemaining <= 0) {
                         return@forEach //can't make it in time!
                     }
-                    val newProgress = MoveProgress(destination, costOfMove, previousMove)
                     queue.addLast(newProgress)
                 }
         }
@@ -147,21 +134,16 @@ sealed interface Progress {
     val minutesRemaining: Int
 }
 
-val STARTING_LOCATION = Location("AA")
-
 class StartingProgress : Progress {
-    override val location = STARTING_LOCATION
+    override val location = Location("AA")
     override val totalPressureReleased = 0
     override val openedValves = emptySet<Valve>()
     override val minutesRemaining = 30
 }
 
-class MoveProgress(override val location: Location, costOfMove: Int, previousMove: Progress) : Progress by previousMove {
-    override val minutesRemaining = previousMove.minutesRemaining - costOfMove
-}
-
-class OpenValveProgress(openedValve: Valve, previousMove: Progress) : Progress by previousMove {
-    override val minutesRemaining = previousMove.minutesRemaining - 1
-    override val totalPressureReleased = (openedValve.flow * (minutesRemaining)) + previousMove.totalPressureReleased //pressure only drops on the following turn
-    override val openedValves = previousMove.openedValves + openedValve
+class ProgressUpdate(openedValve: Valve, costOfMove: Int, previous: Progress) : Progress {
+    override val location = openedValve.location
+    override val minutesRemaining = (previous.minutesRemaining - costOfMove) - 1
+    override val totalPressureReleased = (openedValve.flow * minutesRemaining) + previous.totalPressureReleased //pressure only drops on the following turn
+    override val openedValves = previous.openedValves + openedValve
 }
