@@ -1,7 +1,10 @@
 package day16
 
 import utils.readInput
-import java.lang.Integer.min
+import java.util.*
+import kotlin.collections.ArrayDeque
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.system.measureTimeMillis
 
 fun main() {
@@ -69,11 +72,32 @@ class ValveLayout private constructor(val valves: Map<Location,Valve>, val tunne
         var highestPressureReleased = 0
         val shortestDistances = buildShortestDistancesMap()
 
-        val queue = ArrayDeque<DuoProgress>()
-        queue.addLast(StartingDuoProgress())
+//        val queue = ArrayDeque<DuoProgress>()
+//        queue.addLast(StartingDuoProgress())
+
+        val queue = PriorityQueue<Pair<DuoProgress, Int>>(compareBy { it.second })
+        queue.add(Pair(StartingDuoProgress(), 0))
+
+        fun upperBound(progress: DuoProgress) : Int {
+            val maxMinutesRemaining = max(progress.minutesRemainingA, progress.minutesRemainingB)
+            var additionalScore = 0
+            val remainingValves = (valves.values - progress.openedValves)
+            remainingValves.forEach { valve ->
+                val distance = min(shortestDistances[Pair(progress.locationA, valve.location)]!!, shortestDistances[Pair(progress.locationB, valve.location)]!!)
+                if (maxMinutesRemaining > distance) {
+                    additionalScore += valve.flow * (maxMinutesRemaining - distance) - 1
+                }
+            }
+            return additionalScore + progress.totalPressureReleased
+        }
 
         while (queue.isNotEmpty()) {
-            val previous = queue.removeFirst()
+//            val previous = queue.removeLast()
+            val (previous, previousUpperBound)= queue.remove()
+
+            if (previousUpperBound < highestPressureReleased) {
+                continue
+            }
 
             if (previous.totalPressureReleased > highestPressureReleased) {
                 highestPressureReleased = previous.totalPressureReleased
@@ -89,28 +113,36 @@ class ValveLayout private constructor(val valves: Map<Location,Valve>, val tunne
                 continue
             }
 
-            // somebody travels to a valve and turn it on
-            (valves.values - previous.openedValves)
-                .forEach { valve ->
-                    // A does it
-                    val costOfMoveA = shortestDistances[Pair(previous.locationA, valve.location)]!!
-                    val newProgressA = DuoProgressUpdateA(valve, costOfMoveA, previous)
+            fun assignToA(valve: Valve, previous: DuoProgress) : DuoProgress {
+                val costOfMove = shortestDistances[Pair(previous.locationA, valve.location)]!!
+                return DuoProgressUpdateA(valve, costOfMove, previous)
+            }
 
-                    if (newProgressA.minutesRemainingA <= 0) {
-                        return@forEach //can't make it in time!
-                    }
-                    queue.addLast(newProgressA)
+            fun assignToB(valve: Valve, previous: DuoProgress): DuoProgress {
+                val costOfMove = shortestDistances[Pair(previous.locationB, valve.location)]!!
+                return DuoProgressUpdateB(valve, costOfMove, previous)
+            }
 
-                    // B does it
-                    val costOfMoveB = shortestDistances[Pair(previous.locationB, valve.location)]!!
-                    val newProgressB = DuoProgressUpdateB(valve, costOfMoveB, previous)
-
-                    if (newProgressB.minutesRemainingB <= 0) {
-                        return@forEach //can't make it in time!
-                    }
-                    queue.addLast(newProgressB)
+            fun addToQueue(newProgress: DuoProgress) {
+                if (newProgress.minutesRemainingA < 0 || newProgress.minutesRemainingB < 0) {
+                    return //somebody can't make it in time!
                 }
+                val upperBound = upperBound(newProgress)
+                if (upperBound < highestPressureReleased) {
+                    return //prune the solution
+                }
+//                queue.addLast(newProgress)
+                queue.add(Pair(newProgress, upperBound))
+            }
 
+            val valvesToTry = valves.values - previous.openedValves
+            valvesToTry.forEach { valve ->
+                addToQueue(assignToA(valve, previous))
+                if (previous.locationA != previous.locationB || previous.minutesRemainingA != previous.minutesRemainingB) {
+                    //it could matter who we assign this to
+                    addToQueue(assignToB(valve, previous))
+                }
+            }
         }
         return highestPressureReleased
     }
@@ -210,12 +242,12 @@ sealed interface DuoProgress {
 }
 
 class StartingDuoProgress: DuoProgress {
-    override val totalPressureReleased = 0
     override val openedValves = emptySet<Valve>()
     override val locationA = Location("AA")
     override val minutesRemainingA = 26
     override val locationB = Location("AA")
     override val minutesRemainingB = 26
+    override val totalPressureReleased = 0
 }
 
 class DuoProgressUpdateA(valveOpenedByA: Valve, costOfMoveA: Int, previous: DuoProgress) : DuoProgress by previous {
