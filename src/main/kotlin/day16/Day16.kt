@@ -76,23 +76,28 @@ class ValveLayout private constructor(val valves: Map<Location,Valve>, val tunne
         queue.add(Pair(StartingDuoProgress(), 0))
 
         fun upperBound(progress: DuoProgress) : Int {
-            val maxMinutesRemaining = max(progress.minutesRemainingA, progress.minutesRemainingB)
             var additionalScore = 0
             val remainingValves = (valves.values - progress.openedValves)
+
             remainingValves.forEach { valve ->
-                val distance = min(shortestDistances[Pair(progress.locationA, valve.location)]!!, shortestDistances[Pair(progress.locationB, valve.location)]!!)
-                if (maxMinutesRemaining > distance) {
-                    additionalScore += (valve.flow * ((maxMinutesRemaining - distance) - 1))
-                }
+                //which has the better score, sending A or B to the valve
+                val aDistance = shortestDistances[Pair(progress.locationA, valve.location)]!!
+                val aScore = if (aDistance < progress.minutesRemainingA) { valve.flow * ((progress.minutesRemainingA - aDistance) - 1) } else { 0 }
+
+                val bDistance = shortestDistances[Pair(progress.locationB, valve.location)]!!
+                val bScore = if (bDistance < progress.minutesRemainingB) { valve.flow * ((progress.minutesRemainingB - bDistance) - 1) } else { 0 }
+
+                additionalScore += max(aScore, bScore)
             }
-            return ((additionalScore * 7) /12) + progress.totalPressureReleased
+
+            return (additionalScore * 7/12 ) + progress.totalPressureReleased
         }
 
         while (queue.isNotEmpty()) {
             val (previous, previousUpperBound)= queue.remove()
 
             if (previousUpperBound < highestPressureReleased) {
-                continue
+                break //every remaining entry in the priority queue will be like this
             }
 
             if (previous.totalPressureReleased > highestPressureReleased) {
@@ -124,9 +129,6 @@ class ValveLayout private constructor(val valves: Map<Location,Valve>, val tunne
                     return //somebody can't make it in time!
                 }
                 val upperBound = upperBound(newProgress)
-                if (upperBound < highestPressureReleased) {
-                    return //prune the solution
-                }
                 queue.add(Pair(newProgress, upperBound))
             }
 
