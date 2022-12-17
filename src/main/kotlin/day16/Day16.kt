@@ -15,7 +15,7 @@ fun main() {
 }
 
 fun part1(input: List<String>): Int {
-    return ValveLayout(input).findMaximumRelievablePressure()
+    return ValveLayout(input).findMaximumSoloRelievablePressure()
 }
 
 fun part2(input: List<String>): Long {
@@ -26,13 +26,13 @@ data class Location(val code:String)
 data class Valve(val location: Location, val flow: Int)
 
 class ValveLayout private constructor(val valves: Map<Location,Valve>, val tunnels: Map<Location, Set<Location>>) {
-    fun findMaximumRelievablePressure(): Int {
+    fun findMaximumSoloRelievablePressure(): Int {
 
         var highestPressureReleased = 0
         val shortestDistances = buildShortestDistancesMap()
 
-        val queue = ArrayDeque<Progress>()
-        queue.addLast(StartingProgress())
+        val queue = ArrayDeque<SoloProgress>()
+        queue.addLast(StartingSoloProgress())
 
         while (queue.isNotEmpty()) {
             val previousMove = queue.removeFirst()
@@ -54,7 +54,7 @@ class ValveLayout private constructor(val valves: Map<Location,Valve>, val tunne
             (valves.values - previousMove.openedValves)
                 .forEach { valve ->
                     val costOfMove = shortestDistances[Pair(previousMove.location, valve.location)]!!
-                    val newProgress = ProgressUpdate(valve, costOfMove, previousMove)
+                    val newProgress = SoloProgressUpdate(valve, costOfMove, previousMove)
 
                     if (newProgress.minutesRemaining <= 0) {
                         return@forEach //can't make it in time!
@@ -127,21 +127,21 @@ class ValveLayout private constructor(val valves: Map<Location,Valve>, val tunne
     }
 }
 
-sealed interface Progress {
+sealed interface SoloProgress {
     val totalPressureReleased: Int
     val openedValves: Set<Valve>
     val location: Location
     val minutesRemaining: Int
 }
 
-class StartingProgress : Progress {
+class StartingSoloProgress : SoloProgress {
     override val location = Location("AA")
     override val totalPressureReleased = 0
     override val openedValves = emptySet<Valve>()
     override val minutesRemaining = 30
 }
 
-class ProgressUpdate(openedValve: Valve, costOfMove: Int, previous: Progress) : Progress {
+class SoloProgressUpdate(openedValve: Valve, costOfMove: Int, previous: SoloProgress) : SoloProgress {
     override val location = openedValve.location
     override val minutesRemaining = (previous.minutesRemaining - costOfMove) - 1
     override val totalPressureReleased = (openedValve.flow * minutesRemaining) + previous.totalPressureReleased //pressure only drops on the following turn

@@ -63,10 +63,10 @@ class Day16Test {
         }
         
         @Test
-        fun `findMaximumRelievablePressure should use BFS to find the most pressure that can be relieved using the rules`() {
+        fun `findMaximumSoloRelievablePressure should use BFS to find the most pressure that can be relieved using the rules`() {
             val valveLayout = ValveLayout(sampleInput)
 
-            val result = valveLayout.findMaximumRelievablePressure()
+            val result = valveLayout.findMaximumSoloRelievablePressure()
 
             assert(result == 1651)
         }
