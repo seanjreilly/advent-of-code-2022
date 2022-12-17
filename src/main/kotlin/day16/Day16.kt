@@ -85,7 +85,7 @@ class ValveLayout private constructor(val valves: Map<Location,Valve>, val tunne
                     additionalScore += (valve.flow * ((maxMinutesRemaining - distance) - 1))
                 }
             }
-            return ((additionalScore * 3) /4) + progress.totalPressureReleased
+            return ((additionalScore * 2) /3) + progress.totalPressureReleased
         }
 
         while (queue.isNotEmpty()) {
