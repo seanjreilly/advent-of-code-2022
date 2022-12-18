@@ -55,6 +55,8 @@ class Simulator(private val jetPatterns: String) {
     private var jetIndex = 0
     private var shapeIndex = 0
 
+    private val rockHeightByColumn = IntArray(7) { -1 }
+
     fun simulateRock() {
         var rock = FallingRock(ROCK_SHAPES[shapeIndex++ % ROCK_SHAPES.size], maximumRockHeight + 3)
         while(true) {
@@ -83,6 +85,12 @@ class Simulator(private val jetPatterns: String) {
         //this is as far as the rock can fall without overlapping a previous rock or the floor
         fallenRocks += rock.points
         maximumRockHeight = max(maximumRockHeight, rock.points.maxOf { it.y } + 1) //rock height is one-based
+        rock.points.forEach { (x,y) ->
+            val currentHeight = rockHeightByColumn[x]
+            rockHeightByColumn[x] = max(currentHeight, y)
+        }
+        val relevantHeight = rockHeightByColumn.min()
+        fallenRocks = fallenRocks.filter { it.y >= relevantHeight - 10 }.toSet()
     }
 
     fun printFallenRocks() : String {
