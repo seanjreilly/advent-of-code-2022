@@ -75,7 +75,6 @@ class Simulator(private val jetPatterns: String) {
                 rock = rockAfterJet
             }
 
-
             //try to fall
             val rockAfterFalling = rock.down()
             if (rockAfterFalling.valid && rockAfterFalling.points.none { it in fallenRocks }) {
@@ -143,21 +142,6 @@ class Simulator(private val jetPatterns: String) {
     }
 
     data class CycleCacheValue(val rocksDropped: Long, val heightSoFar: Long)
-
-    fun printFallenRocks() : String {
-        val result = StringBuilder()
-        ((maximumRockHeight + 2) downTo 0).forEach { y ->
-            val rocksInRow = (0..6).map { x ->
-                when (Point(x, y) in fallenRocks) {
-                    true -> '#'
-                    false -> '.'
-                }
-            }.joinToString("")
-            result.append("|$rocksInRow|\n")
-        }
-        result.append("+-------+")
-        return result.toString()
-    }
 }
 
 typealias Shape = Set<Point>

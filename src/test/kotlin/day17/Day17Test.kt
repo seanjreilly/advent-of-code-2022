@@ -224,3 +224,18 @@ class Day17Test {
         }
     }
 }
+
+fun Simulator.printFallenRocks() : String {
+    val result = StringBuilder()
+    ((maximumRockHeight + 2) downTo 0).forEach { y ->
+        val rocksInRow = (0..6).map { x ->
+            when (Point(x, y) in fallenRocks) {
+                true -> '#'
+                false -> '.'
+            }
+        }.joinToString("")
+        result.append("|$rocksInRow|\n")
+    }
+    result.append("+-------+")
+    return result.toString()
+}
