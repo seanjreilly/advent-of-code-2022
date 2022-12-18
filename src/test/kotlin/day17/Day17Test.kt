@@ -2,14 +2,18 @@ package day17
 
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import utils.Point
 
 class Day17Test {
     private val sampleInput = """>>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"""
 
     @Test
     fun `part1 should call simulateRock 2022 times and return the maximum rock height`() {
-        assert(part1(sampleInput) == 3068)
+        assert(part1(sampleInput) == 3068L)
+    }
+
+    @Test
+    fun `part2 should simulate ONE TRILLION rocks and return the maximum rock height`() {
+        assert(part2(sampleInput) == 1514285714288)
     }
 
     @Nested
@@ -91,7 +95,7 @@ class Day17Test {
         fun `constructor should create a new Simulator with sensible values`() {
             val simulator = Simulator(sampleInput)
             assert(simulator.fallenRocks == emptySet<Point>())
-            assert(simulator.maximumRockHeight == 0)
+            assert(simulator.maximumRockHeight == 0L)
         }
 
         @Test
@@ -100,7 +104,7 @@ class Day17Test {
             simulator.simulateRock()
 
             assert(simulator.fallenRocks == HORIZONTAL_BAR_SHAPE.translate(2, 0))
-            assert(simulator.maximumRockHeight == 1)
+            assert(simulator.maximumRockHeight == 1L)
         }
 
         @Test
@@ -156,7 +160,7 @@ class Day17Test {
             ).sumOf { it.size }
             assert(simulator.fallenRocks.size == expectedTotalNumberOfRocks)
 
-            assert(simulator.maximumRockHeight == 9)
+            assert(simulator.maximumRockHeight == 9L)
         }
 
         @Test
@@ -189,7 +193,7 @@ class Day17Test {
             val simulator = Simulator(sampleInput)
             repeat(10) { simulator.simulateRock() }
 
-            assert(simulator.maximumRockHeight == 17)
+            assert(simulator.maximumRockHeight == 17L)
             val fallenRocks = simulator.printFallenRocks()
             assert(fallenRocks == expectedOutput)
         }
@@ -200,9 +204,23 @@ class Day17Test {
 
             repeat(2022) { simulator.simulateRock() }
 
-            assert(simulator.maximumRockHeight == 3068)
+            assert(simulator.maximumRockHeight == 3068L)
 
             println(simulator.printFallenRocks())
+        }
+
+        @Test
+        fun `bulk simulation of rocks should return the same answer for 2022 rocks`() {
+            val simulator = Simulator(sampleInput)
+            simulator.simulateRocks(2022)
+            assert(simulator.maximumRockHeight == 3068L)
+        }
+
+        @Test
+        fun `bulk simulation of rocks should return the expected answer for ONE TRILLION rocks`() {
+            val simulator = Simulator(sampleInput)
+            simulator.simulateRocks(1000000000000)
+            assert(simulator.maximumRockHeight == 1514285714288)
         }
     }
 }
