@@ -111,22 +111,16 @@ class Simulator(private val jetPatterns: String) {
                 val cycleLength = rocksDroppedSoFar - cycleInfo.rocksDropped
 
                 val heightPerCycle = maximumRockHeight - cycleInfo.heightSoFar
-                println("Found a cycle of $cycleLength rocks gaining $heightPerCycle height per cycle")
-                println("${cycleCache.size} items in the cycle cache")
-
                 val rocksToGo = totalNumberOfRocks - rocksDroppedSoFar
                 val cyclesNeeded = rocksToGo / cycleLength
-                val extraRocks = rocksToGo % cycleLength
-
-                println("Need $cyclesNeeded cycles and $extraRocks additional rocks")
 
                 //add the value of the cycle
                 maximumRockHeight += (cyclesNeeded * heightPerCycle)
                 rocksDroppedSoFar += (cyclesNeeded * cycleLength)
-                //update the fallenRocks cache
                 cacheKey.hydrateFallenRocks(this)
 
                 while (rocksDroppedSoFar < totalNumberOfRocks) {
+                    //perform the final portion of a cycle
                     simulateRock()
                     rocksDroppedSoFar++
                 }
