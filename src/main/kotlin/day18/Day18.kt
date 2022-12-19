@@ -36,40 +36,54 @@ fun findInteriorPoints(points: Set<Point3D>): Set<Point3D> {
     val yBounds = points.minOf { it.y }..points.maxOf { it.y }
     val zBounds = points.minOf { it.z }..points.maxOf { it.z }
 
-    return xBounds
+    val pointsToCheck = xBounds
         .flatMap { x ->
             yBounds.flatMap { y ->
                 zBounds.map { z -> Point3D(x, y, z) }
             }
         }
         .filter { it !in points }
-        .filter { isInteriorPoint(it, points) }
-        .toSet()
-}
 
-fun isInteriorPoint(potentialPoint: Point3D, points: Set<Point3D>): Boolean {
-    //calculate bounding box
-    val xBounds = points.minOf { it.x }..points.maxOf { it.x }
-    val yBounds = points.minOf { it.y }..points.maxOf { it.y }
-    val zBounds = points.minOf { it.z }..points.maxOf { it.z }
+    val knownInteriorPoints = mutableSetOf<Point3D>()
+    val knownExteriorPoints = mutableSetOf<Point3D>()
 
-    val alreadyChecked = mutableSetOf<Point3D>()
-    val queue = ArrayDeque<Point3D>()
-    queue.addLast(potentialPoint)
-    while (queue.isNotEmpty()) {
-        val point = queue.removeFirst()
-        if (point in alreadyChecked) {
-            continue
+    point@for (potentialPoint in pointsToCheck) {
+        //check if this point is an interior point or not
+        val alreadyChecked = mutableSetOf<Point3D>()
+        val queue = ArrayDeque<Point3D>()
+        queue.addLast(potentialPoint)
+        while (queue.isNotEmpty()) {
+            val point = queue.removeFirst()
+            if (point in alreadyChecked) {
+                continue
+            }
+            alreadyChecked += point
+
+            if (point in knownExteriorPoints) {
+                //we've found the outside
+                knownExteriorPoints += potentialPoint
+                continue@point
+            }
+
+            if (point in knownInteriorPoints) {
+                //we've found the inside
+                knownInteriorPoints += potentialPoint
+                continue@point
+            }
+
+            if (point.x !in xBounds && point.y !in yBounds && point.z !in zBounds) {
+                //we've found the outside
+                knownExteriorPoints += potentialPoint
+                continue@point
+            }
+            point.neighbours().filter { it !in points }.forEach { queue.addLast(it) }
         }
-
-        alreadyChecked += point
-
-        if (point.x !in xBounds && point.y !in yBounds && point.z !in zBounds) {
-            return false //we've found the outside
-        }
-        point.neighbours().filter { it !in points }.forEach { queue.addLast(it) }
+        //we've found the inside
+        knownInteriorPoints += potentialPoint
+        continue@point
     }
-    return true
+
+    return knownInteriorPoints
 }
 
 fun parse(input: List<String>): Set<Point3D> {
