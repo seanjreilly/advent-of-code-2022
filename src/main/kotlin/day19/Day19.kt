@@ -208,13 +208,9 @@ data class Progress(
     }
 
     val heuristic by lazy {
-//        geodes.value + //geodes already mined
-//            geodeRobots * minutesRemaining + //geodes that will be mined
-//            (minutesRemaining - 1 downTo 0).sum() //we can build 1 geode robot per turn — what could that mine?
-
         geodes.value + //geodes already mined
             geodeRobots * minutesRemaining + //geodes that will be mined
-            ((minutesRemaining - 1 downTo 0).sum() / 1.2) //we can build 1 geode robot per turn — what could that mine?
+            (minutesRemaining - 1 downTo 0).sum() //we can build 1 geode robot per turn — what could that mine?
     }
 
     companion object {
