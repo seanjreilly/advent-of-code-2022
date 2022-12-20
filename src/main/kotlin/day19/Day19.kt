@@ -5,6 +5,8 @@ import utils.stack.Stack
 import utils.stack.pop
 import utils.stack.push
 import kotlin.math.max
+import kotlin.streams.asStream
+import kotlin.streams.toList
 import kotlin.system.measureTimeMillis
 
 fun main() {
@@ -24,8 +26,14 @@ fun part1(input: List<String>): Int {
         .sum()
 }
 
-fun part2(input: List<String>): Long {
-    return 0
+fun part2(input: List<String>): Int {
+    return parse(input).asSequence()
+        .take(3)
+        .asStream()
+        .parallel()
+        .mapToInt { calculateMaximumGeodes(it, 32) }
+        .toList()
+        .reduce { x,y -> x * y }
 }
 
 fun parse(input: List<String>): List<Blueprint> {

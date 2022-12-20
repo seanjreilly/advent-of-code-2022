@@ -9,8 +9,15 @@ class Day19Test {
     """.trimIndent().lines()
 
     @Test
-    fun `part1 should calculate the maximum geodes produced by each blueprint, multiply that by the blueprint id for each blueprint and return the sum`() {
+    fun `part1 should calculate the maximum geodes produced by each blueprint in 24 minutes, multiply that by the blueprint id for each blueprint and return the sum`() {
         assert(part1(sampleInput) == 33)
+    }
+
+    @Test
+    fun `part2 should calculate the maximum geodes produce by the first 3 blueprints in 32 minutes, and return the product`() {
+        val input = sampleInput + sampleInput.first() //need to stretch the input to 3 lines
+
+        assert(part2(input) == 56 * 62 * 56)
     }
 
     @Test
@@ -37,4 +44,12 @@ class Day19Test {
         assert(calculateMaximumGeodes(blueprint2, minutesAllowed) == 12)
     }
 
+    @Test
+    fun `calculateMaximumGeodes should return the number of geodes that can be returned using a blueprint in 2324 minutes`() {
+        val minutesAllowed = 32
+        val (blueprint1, blueprint2) = parse(sampleInput)
+
+        assert(calculateMaximumGeodes(blueprint1, minutesAllowed) == 56)
+        assert(calculateMaximumGeodes(blueprint2, minutesAllowed) == 62)
+    }
 }
