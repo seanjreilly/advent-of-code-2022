@@ -92,8 +92,10 @@ fun calculateMaximumGeodes(blueprint: Blueprint): Int {
         val canAffordGeodeRobot = previous.ore >= blueprint.geodeRobotCost.first &&
             previous.obsidian >= blueprint.geodeRobotCost.second
 
-        //there is always at least the option (sometimes it's mandatory) to not build a robot
-        enqueue(previous.gatherResources())
+        if (!canAffordGeodeRobot) {
+            //it doesn't make sense to do nothing if you can build a geode robot
+            enqueue(previous.gatherResources())
+        }
 
         if (canAffordOreRobot && previous.oreRobots < maxOreRobotsNeeded) {
             val next = previous
