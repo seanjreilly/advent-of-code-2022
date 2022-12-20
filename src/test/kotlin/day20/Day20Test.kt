@@ -47,6 +47,22 @@ class Day20Test {
         val result = list.mix()
         assert(result circularEquals listOf(1, 2, 1, 0))
     }
+
+    @Test
+    fun `mix should mix items for up to 10 rounds`() {
+        val list = parse(sampleInput).map { it * DECRYPTION_KEY }
+
+        assert(list.mix(1) circularEquals listOf(0, -2434767459, 3246356612, -1623178306, 2434767459, 1623178306, 811589153))
+        assert(list.mix(2) circularEquals listOf(0, 2434767459, 1623178306, 3246356612, -2434767459, -1623178306, 811589153))
+        assert(list.mix(3) circularEquals listOf(0, 811589153, 2434767459, 3246356612, 1623178306, -1623178306, -2434767459))
+        assert(list.mix(4) circularEquals listOf(0, 1623178306, -2434767459, 811589153, 2434767459, 3246356612, -1623178306))
+        assert(list.mix(5) circularEquals listOf(0, 811589153, -1623178306, 1623178306, -2434767459, 3246356612, 2434767459))
+        assert(list.mix(6) circularEquals listOf(0, 811589153, -1623178306, 3246356612, -2434767459, 1623178306, 2434767459))
+        assert(list.mix(7) circularEquals listOf(0, -2434767459, 2434767459, 1623178306, -1623178306, 811589153, 3246356612))
+        assert(list.mix(8) circularEquals listOf(0, 1623178306, 3246356612, 811589153, -2434767459, 2434767459, -1623178306))
+        assert(list.mix(9) circularEquals listOf(0, 811589153, 1623178306, -2434767459, 3246356612, 2434767459, -1623178306))
+        assert(list.mix(10) circularEquals listOf(0, -2434767459, 1623178306, 3246356612, -1623178306, 2434767459, 811589153))
+    }
 }
 
 /**

@@ -24,18 +24,24 @@ fun part2(input: List<String>): Long {
     return 0
 }
 
+const val DECRYPTION_KEY = 811589153L
+
 fun parse(input: List<String>): List<Long> = input.map { it.toLong() }
 
-fun List<Long>.mix(): List<Long> {
+fun List<Long>.mix(rounds: Int = 1): List<Long> {
     //using a mutable ArrayList is actually faster than using a LinkedList
     val linkedList = this.mapIndexed { index, value -> Pair(index, value) }.toMutableList()
-    this.forEachIndexed { originalIndex, value ->
-        if (value == 0L) { return@forEachIndexed }
+    repeat(rounds) {
+        this.forEachIndexed { originalIndex, value ->
+            if (value == 0L) {
+                return@forEachIndexed
+            }
 
-        val index = linkedList.indexOf(Pair(originalIndex, value))
-        val element = linkedList.removeAt(index)
-        val newIndex = (index + value).mod(linkedList.size)
-        linkedList.add(newIndex, element)
+            val index = linkedList.indexOf(Pair(originalIndex, value))
+            val element = linkedList.removeAt(index)
+            val newIndex = (index + value).mod(linkedList.size)
+            linkedList.add(newIndex, element)
+        }
     }
     return linkedList.map { it.second }
 }
