@@ -1,7 +1,8 @@
 package day19
 
 import utils.readInput
-import java.util.PriorityQueue
+import utils.stack.*
+import utils.stack.push
 import kotlin.math.max
 import kotlin.system.measureTimeMillis
 
@@ -41,11 +42,8 @@ fun parse(input: List<String>): List<Blueprint> {
 fun calculateMaximumGeodes(blueprint: Blueprint): Int {
 
     var maxGeodesSoFar = 0
-    val queue = PriorityQueue<Progress>(compareByDescending { it.heuristic })
-//    val queue = PriorityQueue<Progress>(compareByDescending { it.heuristic() })
-//    val queue = PriorityQueue<Progress>(compareBy { it.heuristic() })
-//    val queue = PriorityQueue<Progress>(compareBy { it.heuristic })
-    queue += Progress.starting()
+    val stack = Stack<Progress>()
+    stack.push(Progress.starting())
     val statesSeenBefore = mutableSetOf<Progress>()
 
     fun enqueue(progress: Progress) {
@@ -53,11 +51,11 @@ fun calculateMaximumGeodes(blueprint: Blueprint): Int {
             return
         }
         statesSeenBefore += progress
-        queue += progress
+        stack.push(progress)
     }
 
-    while (queue.isNotEmpty()) {
-        val previous = queue.remove()
+    while (stack.isNotEmpty()) {
+        val previous = stack.pop()
 
         maxGeodesSoFar = max(previous.geodes.value, maxGeodesSoFar)
 
@@ -66,9 +64,7 @@ fun calculateMaximumGeodes(blueprint: Blueprint): Int {
         }
 
         if (previous.heuristic < maxGeodesSoFar) {
-//            continue
-            //there's nothing left in the queue that can beat what we've already attained
-            break
+            continue
         }
 
         val canAffordOreRobot = previous.ore >= blueprint.oreRobotCost
@@ -77,6 +73,9 @@ fun calculateMaximumGeodes(blueprint: Blueprint): Int {
             previous.clay >= blueprint.obsidianRobotCost.second
         val canAffordGeodeRobot = previous.ore >= blueprint.geodeRobotCost.first &&
             previous.obsidian >= blueprint.geodeRobotCost.second
+
+        //there is always at least the option (sometimes it's mandatory) to not build a robot
+        enqueue(previous.gatherResources())
 
         if (canAffordOreRobot) {
             val next = previous
@@ -111,10 +110,6 @@ fun calculateMaximumGeodes(blueprint: Blueprint): Int {
                 .copy(geodeRobots = previous.geodeRobots + 1)
             enqueue(next)
         }
-
-        //there is always at least the option (sometimes it's mandatory) to not build a robot
-        val next = previous.gatherResources()
-        enqueue(next)
     }
     return maxGeodesSoFar
 }
