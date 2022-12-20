@@ -84,62 +84,91 @@ fun calculateMaximumGeodes(blueprint: Blueprint, minutesAllowed: Int): Int {
     }
 
     while (stack.isNotEmpty()) {
-        val previous = stack.pop()
+        val state = stack.pop()
 
-        maxGeodesSoFar = max(previous.geodes.value, maxGeodesSoFar)
+        val geodesThisConfigurationWillProduceWithNoAdditionalRobots = state.geodes.value + (state.geodeRobots * state.minutesRemaining)
+        maxGeodesSoFar = max(geodesThisConfigurationWillProduceWithNoAdditionalRobots, maxGeodesSoFar)
 
-        if (previous.minutesRemaining == 0) {
+        if (state.minutesRemaining <= 0) {
             continue
         }
 
-        if (previous.heuristic < maxGeodesSoFar) {
+        if (state.heuristic < maxGeodesSoFar) {
             continue
         }
 
-        val canAffordOreRobot = previous.ore >= blueprint.oreRobotCost
-        val canAffordClayRobot = previous.ore >= blueprint.clayRobotCost
-        val canAffordObsidianRobot = previous.ore >= blueprint.obsidianRobotCost.first &&
-            previous.clay >= blueprint.obsidianRobotCost.second
-        val canAffordGeodeRobot = previous.ore >= blueprint.geodeRobotCost.first &&
-            previous.obsidian >= blueprint.geodeRobotCost.second
+        /*
+           Decide which robot to build next, and wait until we can afford to build it
+         */
 
-        if (!canAffordGeodeRobot) {
-            //it doesn't make sense to do nothing if you can build a geode robot
-            enqueue(previous.gatherResources())
+        // ore robot (if we can benefit from another one)
+        if (state.oreRobots < maxOreRobotsNeeded) {
+            var buildState = state
+            while (buildState.ore < blueprint.oreRobotCost) {
+                buildState = buildState.gatherResources()
+            }
+            if (buildState.minutesRemaining >= 2) {
+                //it takes one minute to build the robot and another for it to produce anything
+                val next = buildState
+                    .copy(ore = buildState.ore - blueprint.oreRobotCost)
+                    .gatherResources()
+                    .copy(oreRobots = buildState.oreRobots + 1)
+                enqueue(next)
+            }
         }
 
-        if (canAffordOreRobot && previous.oreRobots < maxOreRobotsNeeded) {
-            val next = previous
-                .copy(ore = previous.ore - blueprint.oreRobotCost)
-                .gatherResources()
-                .copy(oreRobots = previous.oreRobots + 1)
-            enqueue(next)
+        // clay robot (if we can benefit from another one)
+        if (state.clayRobots < maxClayRobotsNeeded) {
+            var buildState = state
+            while (buildState.ore < blueprint.clayRobotCost) {
+                buildState = buildState.gatherResources()
+            }
+
+            if (buildState.minutesRemaining >= 2) {
+                //it takes one minute to build the robot and another for it to produce anything
+                val next = buildState
+                    .copy(ore = buildState.ore - blueprint.clayRobotCost)
+                    .gatherResources()
+                    .copy(clayRobots = buildState.clayRobots + 1)
+                enqueue(next)
+            }
         }
 
-        if (canAffordClayRobot && previous.clayRobots < maxClayRobotsNeeded) {
-            val next = previous
-                .copy(ore = previous.ore - blueprint.clayRobotCost)
-                .gatherResources()
-                .copy(clayRobots = previous.clayRobots + 1)
-            enqueue(next)
-        }
-
-        if (canAffordObsidianRobot && previous.obsidianRobots < maxObsidianRobotsNeeded) {
+        // obsidian robot (if we can benefit from another one and have the robots we need to build it)
+        if (state.obsidianRobots < maxObsidianRobotsNeeded && state.clayRobots > 0) {
             val (oreCost, clayCost) = blueprint.obsidianRobotCost
-            val next = previous
-                .copy(ore = previous.ore - oreCost, clay = previous.clay - clayCost)
-                .gatherResources()
-                .copy(obsidianRobots = previous.obsidianRobots + 1)
-            enqueue(next)
+
+            var buildState = state
+            while (buildState.ore < oreCost || buildState.clay < clayCost) {
+                buildState = buildState.gatherResources()
+            }
+
+            if (buildState.minutesRemaining >= 2) {
+                //it takes one minute to build the robot and another for it to produce anything
+                val next = buildState
+                    .copy(ore = buildState.ore - oreCost, clay = buildState.clay - clayCost)
+                    .gatherResources()
+                    .copy(obsidianRobots = buildState.obsidianRobots + 1)
+                enqueue(next)
+            }
         }
 
-        if (canAffordGeodeRobot) {
+        // try and build a geode robot if we can produce the materials (there's no limit on useful geode robots)
+        if (state.obsidianRobots > 0) {
+            var buildState = state
             val (oreCost, obsidianCost) = blueprint.geodeRobotCost
-            val next = previous
-                .copy(ore = previous.ore - oreCost, obsidian = previous.obsidian - obsidianCost)
-                .gatherResources()
-                .copy(geodeRobots = previous.geodeRobots + 1)
-            enqueue(next)
+            while (buildState.ore < oreCost || buildState.obsidian < obsidianCost) {
+                buildState = buildState.gatherResources()
+            }
+
+            if (buildState.minutesRemaining >= 2) {
+                //it takes one minute to build the robot and another for it to produce anything
+                val next = buildState
+                    .copy(ore = buildState.ore - oreCost, obsidian = buildState.obsidian - obsidianCost)
+                    .gatherResources()
+                    .copy(geodeRobots = buildState.geodeRobots + 1)
+                enqueue(next)
+            }
         }
     }
     return maxGeodesSoFar
