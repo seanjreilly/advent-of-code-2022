@@ -27,6 +27,7 @@ fun part2(input: List<String>): Long {
 fun parse(input: List<String>): List<Int> = input.map { it.toInt() }
 
 fun List<Int>.mix(): List<Int> {
+    //using a mutable ArrayList is actually faster than using a LinkedList
     val linkedList = this.mapIndexed { index, value -> Pair(index, value) }.toMutableList()
     this.forEachIndexed { originalIndex, value ->
         if (value ==0) { return@forEachIndexed }
