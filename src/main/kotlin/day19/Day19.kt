@@ -180,7 +180,6 @@ object Geode: Material<Geode>
 data class Amount<M> (val value: Int) where M : Material<M> {
     operator fun minus (other: Amount<M>) : Amount<M> = Amount(this.value - other.value)
     operator fun plus (other: Amount<M>) : Amount<M> = Amount(this.value + other.value)
-    operator fun times (other: Int) : Amount<M> = Amount(this.value * other)
     operator fun compareTo(other: Amount<M>) : Int = this.value.compareTo(other.value)
 }
 
