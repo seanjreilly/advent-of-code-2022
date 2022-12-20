@@ -18,7 +18,10 @@ fun main() {
 }
 
 fun part1(input: List<String>): Int {
-    return parse(input).sumOf { it.id * calculateMaximumGeodes(it, 24) }
+    return parse(input).stream()
+        .parallel()
+        .mapToInt { it.id * calculateMaximumGeodes(it, 24) }
+        .sum()
 }
 
 fun part2(input: List<String>): Long {
@@ -179,7 +182,7 @@ data class Progress(
 
         geodes.value + //geodes already mined
             geodeRobots * minutesRemaining + //geodes that will be mined
-            ((minutesRemaining - 1 downTo 0).sum() / 1.5) //we can build 1 geode robot per turn — what could that mine?
+            ((minutesRemaining - 1 downTo 0).sum() / 1.2) //we can build 1 geode robot per turn — what could that mine?
     }
 
     companion object {
