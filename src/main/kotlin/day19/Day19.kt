@@ -56,7 +56,6 @@ fun calculateMaximumGeodes(blueprint: Blueprint, minutesAllowed: Int): Int {
     var maxGeodesSoFar = 0
     val stack = Stack<Progress>()
     stack.push(Progress.starting(minutesAllowed))
-    val statesSeenBefore = mutableSetOf<Progress>()
 
     fun <M : Material<M>> max(vararg costs: Amount<M>) : Int {
         var result = 0
@@ -76,10 +75,6 @@ fun calculateMaximumGeodes(blueprint: Blueprint, minutesAllowed: Int): Int {
     val maxObsidianRobotsNeeded = blueprint.geodeRobotCost.second.value //we can only spend obsidian on geode robots
 
     fun enqueue(progress: Progress) {
-        if (progress in statesSeenBefore) {
-            return
-        }
-        statesSeenBefore += progress
         stack.push(progress)
     }
 
