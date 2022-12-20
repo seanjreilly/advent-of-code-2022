@@ -30,10 +30,11 @@ class Day19Test {
 
     @Test
     fun `calculateMaximumGeodes should return the number of geodes that can be returned using a blueprint in 24 minutes`() {
+        val minutesAllowed = 24
         val (blueprint1, blueprint2) = parse(sampleInput)
 
-        assert(calculateMaximumGeodes(blueprint1) == 9)
-        assert(calculateMaximumGeodes(blueprint2) == 12)
+        assert(calculateMaximumGeodes(blueprint1, minutesAllowed) == 9)
+        assert(calculateMaximumGeodes(blueprint2, minutesAllowed) == 12)
     }
 
 }

@@ -18,7 +18,7 @@ fun main() {
 }
 
 fun part1(input: List<String>): Int {
-    return parse(input).sumOf { it.id * calculateMaximumGeodes(it) }
+    return parse(input).sumOf { it.id * calculateMaximumGeodes(it, 24) }
 }
 
 fun part2(input: List<String>): Long {
@@ -40,11 +40,11 @@ fun parse(input: List<String>): List<Blueprint> {
         }
 }
 
-fun calculateMaximumGeodes(blueprint: Blueprint): Int {
+fun calculateMaximumGeodes(blueprint: Blueprint, minutesAllowed: Int): Int {
 
     var maxGeodesSoFar = 0
     val stack = Stack<Progress>()
-    stack.push(Progress.starting())
+    stack.push(Progress.starting(minutesAllowed))
     val statesSeenBefore = mutableSetOf<Progress>()
 
     fun <M : Material<M>> max(vararg costs: Amount<M>) : Int {
@@ -183,10 +183,10 @@ data class Progress(
     }
 
     companion object {
-        fun starting() = Progress(
+        fun starting(minutesRemaining: Int) = Progress(
             Ore(0), Clay(0), Obsidian(0), Geode(0),
             1, 0, 0, 0,
-            24
+            minutesRemaining
         )
     }
 }
