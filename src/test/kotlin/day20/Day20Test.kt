@@ -15,21 +15,21 @@ class Day20Test {
 
     @Test
     fun `part1 should mix the input and return the sum of the 1000th, 2000th, and 3000th symbols after the 0`() {
-        assert(part1(sampleInput) == 4 + -3 + 2)
+        assert(part1(sampleInput) == 4L + -3L + 2L)
     }
 
     @Test
-    fun `parse should return a LinkedList of Ints`() {
+    fun `parse should return a list of Longs`() {
         val result = parse(sampleInput)
 
-        val expectedResult = listOf(1, 2, -3, 3, -2, 0, 4)
+        val expectedResult = listOf<Long>(1, 2, -3, 3, -2, 0, 4)
         assert(expectedResult == result)
     }
 
     @Test
     fun `mix should move each list item a number of positions equal to its value, wrapping around as necessary`() {
         val list = parse(sampleInput)
-        val expectedResult = listOf(-2, 1, 2, -3, 4, 0, 3)
+        val expectedResult = listOf<Long>(-2, 1, 2, -3, 4, 0, 3)
 
         val result = list.mix()
 
@@ -42,9 +42,9 @@ class Day20Test {
         // 2 1 1 0
         // 1 1 2 0
         // 1 2 1 0
-        val list = listOf(1, 2, 1, 0)
+        val list = listOf<Long>(1, 2, 1, 0)
 
         val result = list.mix()
-        assert(result == listOf(1, 2, 1, 0))
+        assert(result == listOf<Long>(1, 2, 1, 0))
     }
 }

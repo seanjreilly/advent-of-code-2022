@@ -13,7 +13,7 @@ fun main() {
     println("Elapsed time: $elapsed ms.")
 }
 
-fun part1(input: List<String>): Int {
+fun part1(input: List<String>): Long {
     val mix = parse(input).mix()
     val index = mix.indexOf(0)
     fun safeIndex(value: Int) = Math.floorMod(index + value, mix.size)
@@ -24,13 +24,13 @@ fun part2(input: List<String>): Long {
     return 0
 }
 
-fun parse(input: List<String>): List<Int> = input.map { it.toInt() }
+fun parse(input: List<String>): List<Long> = input.map { it.toLong() }
 
-fun List<Int>.mix(): List<Int> {
+fun List<Long>.mix(): List<Long> {
     //using a mutable ArrayList is actually faster than using a LinkedList
     val linkedList = this.mapIndexed { index, value -> Pair(index, value) }.toMutableList()
     this.forEachIndexed { originalIndex, value ->
-        if (value ==0) { return@forEachIndexed }
+        if (value == 0L) { return@forEachIndexed }
 
         val index = linkedList.indexOf(Pair(originalIndex, value))
         val element = linkedList.removeAt(index)
