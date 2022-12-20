@@ -29,11 +29,11 @@ class Day20Test {
     @Test
     fun `mix should move each list item a number of positions equal to its value, wrapping around as necessary`() {
         val list = parse(sampleInput)
-        val expectedResult = listOf<Long>(-2, 1, 2, -3, 4, 0, 3)
+        val expectedResult = listOf<Long>(1, 2, -3, 4, 0, 3, -2)
 
         val result = list.mix()
 
-        assert(result == expectedResult)
+        assert(result circularEquals expectedResult)
     }
 
     @Test
@@ -45,6 +45,31 @@ class Day20Test {
         val list = listOf<Long>(1, 2, 1, 0)
 
         val result = list.mix()
-        assert(result == listOf<Long>(1, 2, 1, 0))
+        assert(result circularEquals listOf(1, 2, 1, 0))
     }
+}
+
+/**
+ * Checks that two circular lists are equal.
+ * A circular function could offset the list elements by one or more,
+ * which breaks regular equality but should still work for the purposes
+ * of these tests.
+ */
+infix fun List<Long>.circularEquals(other: List<Long>) : Boolean {
+    if (this.size != other.size) {
+        return false
+    }
+    if (this == other) {
+        return true
+    }
+
+    val mutableOther = other.toMutableList()
+    repeat(size - 1) {
+        val element = mutableOther.removeFirst()
+        mutableOther.add(element)
+        if (this == mutableOther) {
+            return true
+        }
+    }
+    return false
 }
