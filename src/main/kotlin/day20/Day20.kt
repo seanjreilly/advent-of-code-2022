@@ -21,7 +21,10 @@ fun part1(input: List<String>): Long {
 }
 
 fun part2(input: List<String>): Long {
-    return 0
+    val mix = parse(input).map { it * DECRYPTION_KEY }.mix(10)
+    val index = mix.indexOf(0)
+    fun safeIndex(value: Int) = Math.floorMod(index + value, mix.size)
+    return mix[safeIndex(1000)] + mix[safeIndex(2000)] + mix[safeIndex(3000)]
 }
 
 const val DECRYPTION_KEY = 811589153L

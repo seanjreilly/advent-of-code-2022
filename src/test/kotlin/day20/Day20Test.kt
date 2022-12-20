@@ -14,8 +14,13 @@ class Day20Test {
     """.trimIndent().lines()
 
     @Test
-    fun `part1 should mix the input and return the sum of the 1000th, 2000th, and 3000th symbols after the 0`() {
+    fun `part1 should mix the input and return the sum of the 1000th, 2000th, and 3000th elements after the 0`() {
         assert(part1(sampleInput) == 4L + -3L + 2L)
+    }
+
+    @Test
+    fun `part2 should multiply each element of the input by the decryption key, mix it 10 times and return the sum of the 1000th, 2000th, and 3000th elements after the 0`() {
+        assert(part2(sampleInput) == 811589153L + 2434767459L + -1623178306L)
     }
 
     @Test
