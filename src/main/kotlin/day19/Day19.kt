@@ -1,7 +1,8 @@
 package day19
 
 import utils.readInput
-import utils.stack.*
+import utils.stack.Stack
+import utils.stack.pop
 import utils.stack.push
 import kotlin.math.max
 import kotlin.system.measureTimeMillis
@@ -46,6 +47,23 @@ fun calculateMaximumGeodes(blueprint: Blueprint): Int {
     stack.push(Progress.starting())
     val statesSeenBefore = mutableSetOf<Progress>()
 
+    fun <M : Material<M>> max(vararg costs: Amount<M>) : Int {
+        var result = 0
+        costs.map { it.value }.forEach { result = max(result, it) }
+        return result
+    }
+
+    //there's no point having more ore robots on hand then we can spend in one turn, as we can only build one robot at a time
+    val maxOreRobotsNeeded = max(
+        blueprint.oreRobotCost,
+        blueprint.clayRobotCost,
+        blueprint.obsidianRobotCost.first,
+        blueprint.geodeRobotCost.first
+    )
+
+    val maxClayRobotsNeeded = blueprint.obsidianRobotCost.second.value //we can only spend clay on obsidian robots
+    val maxObsidianRobotsNeeded = blueprint.geodeRobotCost.second.value //we can only spend obsidian on geode robots
+
     fun enqueue(progress: Progress) {
         if (progress in statesSeenBefore) {
             return
@@ -77,7 +95,7 @@ fun calculateMaximumGeodes(blueprint: Blueprint): Int {
         //there is always at least the option (sometimes it's mandatory) to not build a robot
         enqueue(previous.gatherResources())
 
-        if (canAffordOreRobot) {
+        if (canAffordOreRobot && previous.oreRobots < maxOreRobotsNeeded) {
             val next = previous
                 .copy(ore = previous.ore - blueprint.oreRobotCost)
                 .gatherResources()
@@ -85,7 +103,7 @@ fun calculateMaximumGeodes(blueprint: Blueprint): Int {
             enqueue(next)
         }
 
-        if (canAffordClayRobot) {
+        if (canAffordClayRobot && previous.clayRobots < maxClayRobotsNeeded) {
             val next = previous
                 .copy(ore = previous.ore - blueprint.clayRobotCost)
                 .gatherResources()
@@ -93,7 +111,7 @@ fun calculateMaximumGeodes(blueprint: Blueprint): Int {
             enqueue(next)
         }
 
-        if (canAffordObsidianRobot) {
+        if (canAffordObsidianRobot && previous.obsidianRobots < maxObsidianRobotsNeeded) {
             val (oreCost, clayCost) = blueprint.obsidianRobotCost
             val next = previous
                 .copy(ore = previous.ore - oreCost, clay = previous.clay - clayCost)
