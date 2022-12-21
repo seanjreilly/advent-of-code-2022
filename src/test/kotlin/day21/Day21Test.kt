@@ -28,6 +28,11 @@ class Day21Test {
     }
 
     @Test
+    fun `part2 should use linear interpolation to generate the solution for part 2`() {
+        assert(part2(sampleInput) == 301L)
+    }
+
+    @Test
     fun `parse should return a map of monkey ids to monkeys`() {
         val result:Map<String, Monkey> = parse(sampleInput)
 
