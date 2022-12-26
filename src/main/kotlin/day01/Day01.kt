@@ -22,12 +22,18 @@ fun part2(input: List<String>): Int {
 }
 
 fun calculateSums(originalInput: List<String>): List<Int> {
+    return originalInput
+        .chunkOnEmptyElement()
+        .map { it.sumOf { it.toInt() } }
+}
+
+fun List<String>.chunkOnEmptyElement() : List<List<String>> {
+    var input = this
     val chunks = mutableListOf<List<String>>()
-    var input = originalInput
     while (input.isNotEmpty()) {
         val chunk = input.takeWhile { it != "" }
         input = input.drop(chunk.size + 1)
         chunks += chunk
     }
-    return chunks.map { it.map { it.toInt() }.sum() }
+    return chunks
 }
