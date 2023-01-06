@@ -68,51 +68,51 @@ class Day22Test {
         }
 
         @Test
-        fun `validColumns should return a range of valid columns for each row`() {
+        fun `validColumnsForEachRow should return a range of valid columns for each row`() {
             val map = GroveMap(sampleInput)
 
-            assert(map.validColumns.size == map.maxRow + 1)
+            assert(map.validColumnsForEachRow.size == map.maxRow + 1)
 
-            assert(map.validColumns[0] == 8..11)
-            assert(map.validColumns[1] == 8..11)
-            assert(map.validColumns[2] == 8..11)
-            assert(map.validColumns[3] == 8..11)
+            assert(map.validColumnsForEachRow[0] == 8..11)
+            assert(map.validColumnsForEachRow[1] == 8..11)
+            assert(map.validColumnsForEachRow[2] == 8..11)
+            assert(map.validColumnsForEachRow[3] == 8..11)
 
-            assert(map.validColumns[4] == 0..11)
-            assert(map.validColumns[5] == 0..11)
-            assert(map.validColumns[6] == 0..11)
-            assert(map.validColumns[7] == 0..11)
+            assert(map.validColumnsForEachRow[4] == 0..11)
+            assert(map.validColumnsForEachRow[5] == 0..11)
+            assert(map.validColumnsForEachRow[6] == 0..11)
+            assert(map.validColumnsForEachRow[7] == 0..11)
 
-            assert(map.validColumns[8] == 8..15)
-            assert(map.validColumns[9] == 8..15)
-            assert(map.validColumns[10] == 8..15)
-            assert(map.validColumns[11] == 8..15)
+            assert(map.validColumnsForEachRow[8] == 8..15)
+            assert(map.validColumnsForEachRow[9] == 8..15)
+            assert(map.validColumnsForEachRow[10] == 8..15)
+            assert(map.validColumnsForEachRow[11] == 8..15)
         }
 
         @Test
-        fun `validRows should return a range of valid rows for each column`() {
+        fun `validRowsForEachColumn should return a range of valid rows for each column`() {
             val map = GroveMap(sampleInput)
 
-            assert(map.validRows.size == map.maxColumn + 1)
+            assert(map.validRowsForEachColumn.size == map.maxColumn + 1)
 
-            assert(map.validRows[0] == 4..7)
-            assert(map.validRows[1] == 4..7)
-            assert(map.validRows[2] == 4..7)
-            assert(map.validRows[3] == 4..7)
-            assert(map.validRows[4] == 4..7)
-            assert(map.validRows[5] == 4..7)
-            assert(map.validRows[6] == 4..7)
-            assert(map.validRows[7] == 4..7)
+            assert(map.validRowsForEachColumn[0] == 4..7)
+            assert(map.validRowsForEachColumn[1] == 4..7)
+            assert(map.validRowsForEachColumn[2] == 4..7)
+            assert(map.validRowsForEachColumn[3] == 4..7)
+            assert(map.validRowsForEachColumn[4] == 4..7)
+            assert(map.validRowsForEachColumn[5] == 4..7)
+            assert(map.validRowsForEachColumn[6] == 4..7)
+            assert(map.validRowsForEachColumn[7] == 4..7)
 
-            assert(map.validRows[8] == 0..11)
-            assert(map.validRows[9] == 0..11)
-            assert(map.validRows[10] == 0..11)
-            assert(map.validRows[11] == 0..11)
+            assert(map.validRowsForEachColumn[8] == 0..11)
+            assert(map.validRowsForEachColumn[9] == 0..11)
+            assert(map.validRowsForEachColumn[10] == 0..11)
+            assert(map.validRowsForEachColumn[11] == 0..11)
 
-            assert(map.validRows[12] == 8..11)
-            assert(map.validRows[13] == 8..11)
-            assert(map.validRows[14] == 8..11)
-            assert(map.validRows[15] == 8..11)
+            assert(map.validRowsForEachColumn[12] == 8..11)
+            assert(map.validRowsForEachColumn[13] == 8..11)
+            assert(map.validRowsForEachColumn[14] == 8..11)
+            assert(map.validRowsForEachColumn[15] == 8..11)
         }
     }
 
@@ -124,11 +124,18 @@ class Day22Test {
 enum class SquareType {
     Open, Solid
 }
-class GroveMap(internal val data : Map<Point, SquareType>, val validColumns: Array<IntRange>, val validRows: Array<IntRange>) {
+class GroveMap(internal val data : Map<Point, SquareType>, val validColumnsForEachRow: Array<IntRange>, val validRowsForEachColumn: Array<IntRange>) {
     operator fun get(point: Point): SquareType? = data[point]
 
-    val maxColumn = validRows.size - 1
-    val maxRow = validColumns.size - 1
+    /**
+     * The maximum valid column index across all the rows
+     */
+    val maxColumn = validRowsForEachColumn.size - 1
+
+    /**
+     * The maximum valid row id across all the columns
+     */
+    val maxRow = validColumnsForEachRow.size - 1
 
     companion object {
         operator fun invoke(input: List<String>) : GroveMap {
