@@ -2,10 +2,14 @@ package day22
 
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import utils.CardinalDirection.*
 import utils.Point
-import utils.TurnDirection
+import utils.TurnDirection.Left
+import utils.TurnDirection.Right
 
 class Day22Test {
+    val IRRELEVENT_TURN_DIRECTION = Left
+
     private val sampleInput = """
                 ...#
                 .#..
@@ -31,22 +35,22 @@ class Day22Test {
 
             val map = GroveMap(input)
 
-            assert(map[Point(8,0)] == SquareType.Open)
-            assert(map[Point(9,0)] == SquareType.Open)
-            assert(map[Point(10,0)] == SquareType.Open)
-            assert(map[Point(11,0)] == SquareType.Solid)
+            assert(map[Point(8, 0)] == SquareType.Open)
+            assert(map[Point(9, 0)] == SquareType.Open)
+            assert(map[Point(10, 0)] == SquareType.Open)
+            assert(map[Point(11, 0)] == SquareType.Solid)
 
-            assert(map[Point(8,1)] == SquareType.Open)
-            assert(map[Point(9,1)] == SquareType.Solid)
-            assert(map[Point(10,1)] == SquareType.Open)
-            assert(map[Point(11,1)] == SquareType.Open)
+            assert(map[Point(8, 1)] == SquareType.Open)
+            assert(map[Point(9, 1)] == SquareType.Solid)
+            assert(map[Point(10, 1)] == SquareType.Open)
+            assert(map[Point(11, 1)] == SquareType.Open)
 
-            assert(map[Point(8,2)] == SquareType.Solid)
-            assert(map[Point(9,2)] == SquareType.Open)
-            assert(map[Point(10,2)] == SquareType.Open)
-            assert(map[Point(11,2)] == SquareType.Open)
+            assert(map[Point(8, 2)] == SquareType.Solid)
+            assert(map[Point(9, 2)] == SquareType.Open)
+            assert(map[Point(10, 2)] == SquareType.Open)
+            assert(map[Point(11, 2)] == SquareType.Open)
 
-            assert(map.data.size == 12) {"Unexpected square found in the map"}
+            assert(map.data.size == 12) { "Unexpected square found in the map" }
         }
 
         @Test
@@ -115,19 +119,110 @@ class Day22Test {
             assert(map.validRowsForEachColumn[14] == 8..11)
             assert(map.validRowsForEachColumn[15] == 8..11)
         }
+
+        @Test
+        fun `updatePosition should move and turn according to the move and return a new position given a position and a move`() {
+            val map = GroveMap(sampleInput)
+            val position = Position(Point(8, 0), East)
+
+            val result = map.updatePosition(position, Move(2, Right))
+            assert(result == Position(Point(10, 0), South))
+        }
+
+        @Test
+        fun `updatePosition should stop moving early when it would run into a wall`() {
+            val map = GroveMap(sampleInput)
+            val position = Position(Point(8, 0), East)
+
+            val result = map.updatePosition(position, Move(4, Right))
+            assert(result == Position(Point(10, 0), South))
+        }
+
+        @Test
+        fun `updatePosition should wrap around when it would go off the east edge of the map`() {
+            val map = GroveMap(sampleInput)
+            val position = Position(Point(11, 6), East)
+
+            val result = map.updatePosition(position, Move(2, IRRELEVENT_TURN_DIRECTION))
+            assert(result.point == Point(1, 6))
+        }
+
+        @Test
+        fun `updatePosition should wrap around when it would go off the west edge of the map`() {
+            val map = GroveMap(sampleInput)
+            val position = Position(Point(0, 6), West)
+
+            val result = map.updatePosition(position, Move(1, IRRELEVENT_TURN_DIRECTION))
+            assert(result.point == Point(11, 6))
+        }
+
+        @Test
+        fun `updatePosition should wrap around when it would go off the south edge of the map`() {
+            val map = GroveMap(sampleInput)
+            val position = Position(Point(5, 7), South)
+
+            val result = map.updatePosition(position, Move(1, IRRELEVENT_TURN_DIRECTION))
+            assert(result.point == Point(5, 4))
+        }
+
+        @Test
+        fun `updatePosition should wrap around when it would go off the north edge of the map`() {
+            val map = GroveMap(sampleInput)
+            val position = Position(Point(5, 4), North)
+
+            val result = map.updatePosition(position, Move(1, IRRELEVENT_TURN_DIRECTION))
+            assert(result.point == Point(5, 7))
+        }
+
+        @Test
+        fun `updatePosition should stop before wrapping around given a wall at the other edge of the map`() {
+            val map = GroveMap(sampleInput)
+            val position = Position(Point(9, 2), East)
+
+            val result = map.updatePosition(position, Move(3, IRRELEVENT_TURN_DIRECTION))
+            assert(result.point == Point(11, 2))
+        }
+
+        @Test
+        fun `startPoint shold return the leftmost available column in the first row`() {
+            val map = GroveMap(sampleInput)
+            val expectedStartPoint = Point(8, 0)
+            assert(map.startPoint == expectedStartPoint)
+        }
+        
+        @Test
+        fun `followPath should apply moves from the starting position and return the final position`() {
+            val map = GroveMap(sampleInput)
+            val path = parsePath(sampleInput)
+
+            val result: Position = map.followPath(Position(map.startPoint, East), path)
+            assert(result == Position(Point(7, 5), East))
+        }
     }
 
     @Test
     fun `parsePath should return a list of moves`() {
-        val path:Path = parsePath(sampleInput)
+        val path: Path = parsePath(sampleInput)
 
-        assert(path[0] == Move(10, TurnDirection.Right))
-        assert(path[1] == Move(5, TurnDirection.Left))
-        assert(path[2] == Move(5, TurnDirection.Right))
-        assert(path[3] == Move(10, TurnDirection.Left))
-        assert(path[4] == Move(4, TurnDirection.Right))
-        assert(path[5] == Move(5, TurnDirection.Left))
+        assert(path[0] == Move(10, Right))
+        assert(path[1] == Move(5, Left))
+        assert(path[2] == Move(5, Right))
+        assert(path[3] == Move(10, Left))
+        assert(path[4] == Move(4, Right))
+        assert(path[5] == Move(5, Left))
         assert(path[6].tilesToMove == 5)
+    }
+    
+    @Nested
+    inner class PositionTest {
+        @Test
+        fun `score should return (the 1-based row times 1000) plus (the 1-based row times 4) + the facing score`() {
+            val point = Point(7, 5)
+            assert(Position(point, East).score == (6 * 1000L) + (8 * 4) + 0)
+            assert(Position(point, South).score == (6 * 1000L) + (8 * 4) + 1)
+            assert(Position(point, West).score == (6 * 1000L) + (8 * 4) + 2)
+            assert(Position(point, North).score == (6 * 1000L) + (8 * 4) + 3)
+        }
     }
 
     @Test
@@ -140,5 +235,11 @@ class Day22Test {
         assert(path.size == 8) //an extra entry is added
         assert(lastMove.tilesToMove == 0) { "the last move should move zero tiles to not change the position" }
         assert(lastMove.turn != secondLastMoveDirection) { "the last move should turn opposite to the padded move added to the second last move to preserve the orientation" }
+    }
+
+    @Test
+    fun `part1 should parse the map and path, start from the top left valid square, follow the path, and return the value encoded by the final position and facing`() {
+        val result = part1(sampleInput)
+        assert(result == 6032L)
     }
 }

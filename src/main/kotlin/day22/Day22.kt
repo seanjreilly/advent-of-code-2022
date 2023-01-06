@@ -1,5 +1,6 @@
 package day22
 
+import utils.CardinalDirection
 import utils.Point
 import utils.TurnDirection
 import utils.readInput
@@ -16,7 +17,9 @@ fun main() {
 }
 
 fun part1(input: List<String>): Long {
-    return 0
+    val map = GroveMap(input)
+    val startPosition = Position(map.startPoint, CardinalDirection.East)
+    return map.followPath(startPosition, parsePath(input)).score
 }
 
 fun part2(input: List<String>): Long {
@@ -30,6 +33,8 @@ internal enum class SquareType {
 internal class GroveMap(internal val data : Map<Point, SquareType>, val validColumnsForEachRow: Array<IntRange>, val validRowsForEachColumn: Array<IntRange>) {
     operator fun get(point: Point): SquareType? = data[point]
 
+    val startPoint = Point(validColumnsForEachRow[0].first, 0)
+
     /**
      * The maximum valid column index across all the rows
      */
@@ -39,6 +44,40 @@ internal class GroveMap(internal val data : Map<Point, SquareType>, val validCol
      * The maximum valid row id across all the columns
      */
     val maxRow = validColumnsForEachRow.size - 1
+
+    fun updatePosition(position: Position, move: Move): Position {
+        var location = position.point
+        var movesRemaining = move.tilesToMove
+        while (movesRemaining-- > 0) {
+            var newLocation = location.move(position.direction)
+            var squareType = data[newLocation]
+            if (squareType == null) {
+                //we've moved off of the edge of the map — wrap around
+                val x = newLocation.x
+                val y = newLocation.y
+                newLocation = when (position.direction) {
+                    CardinalDirection.East -> Point(validColumnsForEachRow[y].first, y)
+                    CardinalDirection.West -> Point(validColumnsForEachRow[y].last, y)
+                    CardinalDirection.South -> Point(x, validRowsForEachColumn[x].first)
+                    CardinalDirection.North -> Point(x, validRowsForEachColumn[x].last)
+                }
+                squareType = data[newLocation]!!
+            }
+
+            if (squareType == SquareType.Solid) {
+                break
+            }
+            location = newLocation
+        }
+        return Position(location, position.direction.turn(move.turn))
+    }
+
+    fun followPath(currentPosition: Position, path: Path): Position {
+        return when (path.isEmpty()) {
+            true -> currentPosition
+            false -> followPath(updatePosition(currentPosition, path.first()), path.drop(1))
+        }
+    }
 
     companion object {
         operator fun invoke(input: List<String>) : GroveMap {
@@ -84,6 +123,16 @@ internal class GroveMap(internal val data : Map<Point, SquareType>, val validCol
 
 internal data class Move(val tilesToMove: Int, val turn: TurnDirection)
 internal typealias Path = List<Move>
+
+private val directionScoreMap = mapOf(
+    CardinalDirection.East to 0,
+    CardinalDirection.South to 1,
+    CardinalDirection.West to 2,
+    CardinalDirection.North to 3,
+)
+internal data class Position(val point: Point, val direction: CardinalDirection) {
+    val score = ((point.y + 1) * 1000L) + ((point.x + 1) * 4L) + directionScoreMap[direction]!!
+}
 
 internal fun parsePath(input: List<String>): Path {
     var line = input.last { it.isNotBlank() }
