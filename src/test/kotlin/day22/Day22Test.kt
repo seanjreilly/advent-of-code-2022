@@ -127,10 +127,8 @@ enum class SquareType {
 class GroveMap(internal val data : Map<Point, SquareType>, val validColumns: Array<IntRange>, val validRows: Array<IntRange>) {
     operator fun get(point: Point): SquareType? = data[point]
 
-    val maxColumn = data.keys.maxOf { it.x }
-    val maxRow = data.keys.maxOf { it.y }
-
-
+    val maxColumn = validRows.size - 1
+    val maxRow = validColumns.size - 1
 
     companion object {
         operator fun invoke(input: List<String>) : GroveMap {
