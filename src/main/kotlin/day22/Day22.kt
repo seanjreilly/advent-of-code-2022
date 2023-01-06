@@ -1,6 +1,7 @@
 package day22
 
 import utils.Point
+import utils.TurnDirection
 import utils.readInput
 import kotlin.system.measureTimeMillis
 
@@ -81,9 +82,6 @@ internal class GroveMap(internal val data : Map<Point, SquareType>, val validCol
     }
 }
 
-internal enum class TurnDirection {
-    Left, Right
-}
 internal data class Move(val tilesToMove: Int, val turn: TurnDirection)
 internal typealias Path = List<Move>
 
@@ -110,24 +108,4 @@ internal fun parsePath(input: List<String>): Path {
     }
 
     return result
-}
-
-internal fun Point.move(direction: Direction): Point {
-    return direction.moveOperation.invoke(this)
-}
-
-internal enum class Direction(internal val moveOperation: (Point) -> Point) {
-    North(Point::north),
-    East(Point::east),
-    South(Point::south),
-    West(Point::west);
-
-    fun turn(direction: TurnDirection): Direction {
-        var index = values().indexOf(this)
-        when (direction) {
-            TurnDirection.Left -> index--
-            TurnDirection.Right -> index++
-        }
-        return values()[index.mod(values().size)]
-    }
 }
