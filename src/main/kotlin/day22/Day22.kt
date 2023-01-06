@@ -22,11 +22,11 @@ fun part2(input: List<String>): Long {
     return 0
 }
 
-enum class SquareType {
+internal enum class SquareType {
     Open, Solid
 }
 
-class GroveMap(internal val data : Map<Point, SquareType>, val validColumnsForEachRow: Array<IntRange>, val validRowsForEachColumn: Array<IntRange>) {
+internal class GroveMap(internal val data : Map<Point, SquareType>, val validColumnsForEachRow: Array<IntRange>, val validRowsForEachColumn: Array<IntRange>) {
     operator fun get(point: Point): SquareType? = data[point]
 
     /**
@@ -78,5 +78,56 @@ class GroveMap(internal val data : Map<Point, SquareType>, val validColumnsForEa
 
             return GroveMap(points, validColumns, validRows)
         }
+    }
+}
+
+internal enum class TurnDirection {
+    Left, Right
+}
+internal data class Move(val tilesToMove: Int, val turn: TurnDirection)
+internal typealias Path = List<Move>
+
+internal fun parsePath(input: List<String>): Path {
+    var line = input.last { it.isNotBlank() }
+
+    /*
+    The last move contains only a distance, with no turn specified
+    We can make this an even list of pairs of moves and turns by adding two extra turns and a move of zero
+    The turns cancel each other out, and moving zero tiles won't change the position
+     */
+    line += "L0R"
+    var characters = line.toList()
+
+    val result = mutableListOf<Move>()
+
+    while (characters.isNotEmpty()) {
+        val rawTilesToMove = characters.takeWhile { it.isDigit() }.joinToString("")
+        val rawTurn = characters[rawTilesToMove.length]
+        val turn = TurnDirection.values().first { it.name.startsWith(rawTurn) }
+
+        result.add(Move(rawTilesToMove.toInt(), turn))
+        characters = characters.drop(rawTilesToMove.length + 1)
+    }
+
+    return result
+}
+
+internal fun Point.move(direction: Direction): Point {
+    return direction.moveOperation.invoke(this)
+}
+
+internal enum class Direction(internal val moveOperation: (Point) -> Point) {
+    North(Point::north),
+    East(Point::east),
+    South(Point::south),
+    West(Point::west);
+
+    fun turn(direction: TurnDirection): Direction {
+        var index = values().indexOf(this)
+        when (direction) {
+            TurnDirection.Left -> index--
+            TurnDirection.Right -> index++
+        }
+        return values()[index.mod(values().size)]
     }
 }

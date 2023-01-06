@@ -2,6 +2,8 @@ package day22
 
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import utils.Point
 
 class Day22Test {
@@ -116,7 +118,145 @@ class Day22Test {
         }
     }
 
-    //parseDirections should return a path — a list of moves
+    @Test
+    fun `parsePath should return a list of moves`() {
+        val path:Path = parsePath(sampleInput)
 
-    //TODO: show how turning clockwise and counterclockwise moves around the cardinal directions
+        assert(path[0] == Move(10, TurnDirection.Right))
+        assert(path[1] == Move(5, TurnDirection.Left))
+        assert(path[2] == Move(5, TurnDirection.Right))
+        assert(path[3] == Move(10, TurnDirection.Left))
+        assert(path[4] == Move(4, TurnDirection.Right))
+        assert(path[5] == Move(5, TurnDirection.Left))
+        assert(path[6].tilesToMove == 5)
+    }
+
+    @Test
+    fun `parsePath should pad the list to make an even number of moves with the same destination _and_ orientation`() {
+        val path = parsePath(sampleInput)
+
+        val secondLastMoveDirection = path.dropLast(1).last().turn
+        val lastMove = path.last()
+
+        assert(path.size == 8) //an extra entry is added
+        assert(lastMove.tilesToMove == 0) { "the last move should move zero tiles to not change the position" }
+        assert(lastMove.turn != secondLastMoveDirection) { "the last move should turn opposite to the padded move added to the second last move to preserve the orientation" }
+    }
+
+    @Nested
+    inner class MoveTest {
+        @Test
+        fun `move should move 1 point north given North`() {
+            val result = Point(0, 0).move(Direction.North)
+            assert(result == Point(0, -1))
+        }
+
+        @Test
+        fun `move should move 1 point east given East`() {
+            val result = Point(0, 0).move(Direction.East)
+            assert(result == Point(1, 0))
+        }
+
+        @Test
+        fun `move should move 1 point south given South`() {
+            val result = Point(0, 0).move(Direction.South)
+            assert(result == Point(0, 1))
+        }
+
+        @Test
+        fun `move should move 1 point west given West`() {
+            val result = Point(0, 0).move(Direction.West)
+            assert(result == Point(-1, 0))
+        }
+    }
+
+    @Nested
+    inner class DirectionTest {
+
+        @Test
+        fun `turning left from North should return West`() {
+            val result = Direction.North.turn(TurnDirection.Left)
+            assert(result == Direction.West)
+        }
+
+        @Test
+        fun `turning right from North should return East`() {
+            val result = Direction.North.turn(TurnDirection.Right)
+            assert(result == Direction.East)
+        }
+
+        @Test
+        fun `turning left from East should return North`() {
+            val result = Direction.East.turn(TurnDirection.Left)
+            assert(result == Direction.North)
+        }
+
+        @Test
+        fun `turning right from East should return South`() {
+            val result = Direction.East.turn(TurnDirection.Right)
+            assert(result == Direction.South)
+        }
+
+        @Test
+        fun `turning left from South should return East`() {
+            val result = Direction.South.turn(TurnDirection.Left)
+            assert(result == Direction.East)
+        }
+
+        @Test
+        fun `turning right from South should return West`() {
+            val result = Direction.South.turn(TurnDirection.Right)
+            assert(result == Direction.West)
+        }
+
+        @Test
+        fun `turning left from West should return South`() {
+            val result = Direction.South.turn(TurnDirection.Left)
+            assert(result == Direction.East)
+        }
+
+        @Test
+        fun `turning right from West should return North`() {
+            val result = Direction.South.turn(TurnDirection.Right)
+            assert(result == Direction.West)
+        }
+
+        @ParameterizedTest
+        @EnumSource(Direction::class)
+        internal fun `turning left 4 times should return the original direction`(direction: Direction) {
+            var newDirection = direction
+            repeat(4) {
+                newDirection = newDirection.turn(TurnDirection.Left)
+            }
+            assert(newDirection == direction)
+        }
+
+        @ParameterizedTest
+        @EnumSource(Direction::class)
+        internal fun `turning right 4 times should return the original direction`(direction: Direction) {
+            var newDirection = direction
+            repeat(4) {
+                newDirection = newDirection.turn(TurnDirection.Right)
+            }
+            assert(newDirection == direction)
+        }
+
+        @ParameterizedTest
+        @EnumSource(Direction::class)
+        internal fun `turning left and then right should return the original direction`(direction: Direction) {
+            val newDirection = direction.turn(TurnDirection.Left)
+            val result = newDirection.turn(TurnDirection.Right)
+            assert(direction != newDirection)
+            assert(result == direction)
+        }
+
+        @ParameterizedTest
+        @EnumSource(Direction::class)
+        internal fun `turning right and then left should return the original direction`(direction: Direction) {
+            val newDirection = direction.turn(TurnDirection.Right)
+            val result = newDirection.turn(TurnDirection.Left)
+            assert(direction != newDirection)
+            assert(result == direction)
+        }
+    }
 }
